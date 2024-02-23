@@ -1,4 +1,4 @@
-import { bodyParser } from "../shared/helpers/bodyParser";
+import { bodyParser } from "../helpers/bodyParser";
 import * as http from "http";
 
 interface BodyParserMiddleware {

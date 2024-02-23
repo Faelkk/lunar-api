@@ -1,14 +1,12 @@
 import * as http from "http";
+import { bodyParserMiddleware } from "../shared/middlewares/bodyParserMiddleware";
+import {
+  CustomIncomingMessage,
+  CustomServerResponse,
+} from "../shared/types/httpType";
 import { sendJsonResponse } from "../shared/helpers/sendJsonResponse";
-import { bodyParserMiddleware } from "../middlewares/bodyParserMiddleware";
-
-interface CustomIncomingMessage extends http.IncomingMessage {
-  params?: { id?: string };
-}
-
-interface CustomServerResponse extends http.ServerResponse {
-  send?: (statusCode: number, body?: unknown) => void;
-}
+import { routeUploadConfig } from "../shared/utils/uploadConfig";
+import { uploadMiddleware } from "../shared/middlewares/uploadMiddleware";
 
 interface handleRoutesProps {
   req: CustomIncomingMessage;
@@ -24,9 +22,26 @@ interface Routes {
 
 export function handleRoutes({ req, res, route }: handleRoutesProps) {
   req.params = { id: req.url?.split("/").filter(Boolean)[1] || undefined };
-
   res.send = (statusCode: number, body?: unknown) =>
     sendJsonResponse({ res, statusCode, body });
+
+  if (["POST", "PUT", "PATCH"].includes(req.method!)) {
+    if (
+      req.headers["content-type"] &&
+      req.headers["content-type"].startsWith("multipart/form-data")
+    ) {
+      console.log(route);
+
+      const { fieldName, storageName } =
+        routeUploadConfig[route.endpoint] || {};
+
+      const uploadHandler = uploadMiddleware(fieldName, storageName);
+
+      uploadHandler({ req, res, next: () => route.handlers(req, res) });
+
+      return;
+    }
+  }
 
   bodyParserMiddleware({ req, res, next: () => route.handlers(req, res) });
 }

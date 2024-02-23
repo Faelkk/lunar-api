@@ -1,26 +1,18 @@
 import * as http from "http";
 import * as url from "url";
+
 import { routes } from "./routes/routes";
 import { handleRoutes } from "./handlers/handleRoutes";
+import { activeCors } from "./shared/helpers/activeCors";
+import { handlePreflightRequest } from "./handlers/handlePreflightRequest";
+import { CustomServerResponse } from "./shared/types/httpType";
+import { authMiddleware } from "./shared/middlewares/authMiddleware";
 
 const server = http.createServer(
-  (req: http.IncomingMessage, res: http.ServerResponse) => {
+  async (req: http.IncomingMessage, res: CustomServerResponse) => {
     try {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, OPTIONS, PUT, DELETE"
-      );
-      res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
-      );
-
-      if (req.method === "OPTIONS") {
-        res.writeHead(200);
-        res.end();
-        return true;
-      }
+      activeCors(res);
+      handlePreflightRequest(req, res);
 
       const requestUrl = req.url;
       if (requestUrl === undefined) throw new Error();
@@ -34,15 +26,20 @@ const server = http.createServer(
         pathname = `/${splitEndPoint[0]}/:id`;
       }
 
-      const route = routes.find(
-        (routeOBJ) =>
-          routeOBJ.endpoint === pathname && routeOBJ.method === req.method
-      );
+      const route = routes.find((routeOBJ) => {
+        return routeOBJ.endpoint === pathname && routeOBJ.method === req.method;
+      });
 
       if (route) {
-        handleRoutes({ req, res, route });
+        authMiddleware({
+          req,
+          res,
+          next: () => {
+            handleRoutes({ req, res, route });
+          },
+        });
       } else {
-        res.writeHead(404, { "Content-type": "text/html" });
+        res.writeHead(500, { "Content-Type": "text/plain" });
         res.end(`Cannot access ${req.method} ${parsedUrl.pathname}`);
       }
     } catch (error) {

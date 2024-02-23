@@ -1,11 +1,7 @@
-import * as http from "http";
-
-interface newIncomingMessage extends http.IncomingMessage {
-  body?: string;
-}
+import { CustomIncomingMessage } from "../types/httpType";
 
 interface bodyParserProps {
-  req: newIncomingMessage;
+  req: CustomIncomingMessage;
   next: (error?: unknown) => void;
 }
 
