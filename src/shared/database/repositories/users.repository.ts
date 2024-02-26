@@ -36,10 +36,16 @@ interface ApiKeyResponse {
   createdAt: Date;
 }
 
+interface userResponse {
+  userName: string;
+  icon: string;
+  id: string;
+}
+
 export const usersRepository = {
   async findUnique(email: string) {
     const result: signinResponse[] =
-      await sql`SELECT * FROM users WHERE email = ${email}`;
+      await sql`SELECT email FROM users WHERE email = ${email}`;
 
     return result[0];
   },
@@ -68,5 +74,11 @@ export const usersRepository = {
       await sql`SELECT * FROM api_keys WHERE user_id = ${userId}`;
 
     return apiKey[0];
+  },
+  async findUser(userId: string) {
+    const result: userResponse[] =
+      await sql`SELECT id,username,icon FROM users WHERE id = ${userId}`;
+
+    return result[0];
   },
 };

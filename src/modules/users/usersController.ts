@@ -3,11 +3,12 @@ import {
   CustomIncomingMessage,
   CustomServerResponse,
 } from "../../shared/types/httpType";
-import { UserSignInData, UserSignUpData } from "../../shared/types/userType";
+import { SigninDTOprops } from "./dto/SigninDto";
+import { SignupDTOprops } from "./dto/SignupDto";
 
 export const usersController = {
   async signin(req: CustomIncomingMessage, res: CustomServerResponse) {
-    const { email, password } = req.body as UserSignInData;
+    const { email, password } = req.body as SigninDTOprops;
 
     try {
       const { accessToken, apiKey } = await usersService.signin({
@@ -26,7 +27,7 @@ export const usersController = {
 
   async signup(req: CustomIncomingMessage, res: CustomServerResponse) {
     const icon = req.fileUrl;
-    const { email, password, name, username } = req.body as UserSignUpData;
+    const { email, password, name, username } = req.body as SignupDTOprops;
 
     try {
       const { accessToken, apiKey } = await usersService.signup({

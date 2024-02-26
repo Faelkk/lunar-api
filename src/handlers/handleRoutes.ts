@@ -30,8 +30,6 @@ export function handleRoutes({ req, res, route }: handleRoutesProps) {
       req.headers["content-type"] &&
       req.headers["content-type"].startsWith("multipart/form-data")
     ) {
-      console.log(route);
-
       const { fieldName, storageName } =
         routeUploadConfig[route.endpoint] || {};
 

@@ -1,6 +1,6 @@
 import CustomError from "../../../shared/utils/customError";
 
-interface SigninDTOprops {
+export interface SigninDTOprops {
   email: string;
   password: string;
 }

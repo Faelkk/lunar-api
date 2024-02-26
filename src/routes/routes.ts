@@ -3,6 +3,7 @@ import { contactsController } from "../modules/contacts/contactsController";
 import { messagesController } from "../modules/messages/messagesController";
 import { usersController } from "../modules/users/usersController";
 import { bodyParserMiddleware } from "../shared/middlewares/bodyParserMiddleware";
+import { invitesController } from "../modules/invites/invitesController";
 
 export const routes = [
   {
@@ -42,7 +43,16 @@ export const routes = [
     method: "DELETE",
     handlers: contactsController.getOneContact,
   },
-
+  {
+    endpoint: "/contacts/invites",
+    method: "GET",
+    handler: invitesController.getInvites,
+  },
+  {
+    endpoint: "/contacts/accept",
+    method: "POST",
+    handler: invitesController.acceptInvite,
+  },
   {
     endpoint: "messages",
     method: "GET",
