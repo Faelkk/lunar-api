@@ -44,12 +44,12 @@ export const routes = [
   {
     endpoint: "/contacts/invites",
     method: "GET",
-    handler: invitesController.getInvites,
+    handlers: invitesController.getInvites,
   },
   {
     endpoint: "/contacts/accept",
     method: "POST",
-    handler: invitesController.acceptInvite,
+    handlers: invitesController.acceptInvite,
   },
   {
     endpoint: "messages",

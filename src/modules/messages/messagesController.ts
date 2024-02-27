@@ -3,9 +3,10 @@ import {
   CustomIncomingMessage,
   CustomServerResponse,
 } from "../../shared/types/httpType";
+import { DeleteMessageDtoProps } from "./dto/DeleteMessageDto";
 import { MessagesDTOprops } from "./dto/MessagesDto";
 import { sendMessageProps } from "./dto/SendMessagesDto";
-import { DeleteMessageDtoProps } from "./dto/deleteMessageDto";
+
 import { messagesServices } from "./messagesServices";
 
 export const messagesController = {
