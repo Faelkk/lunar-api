@@ -19,6 +19,13 @@ interface DeleteMessage extends MessageProps {
   messageId: string;
 }
 
+interface UpdateMessages extends MessageProps {
+  sentAt: Date;
+  contentType: string;
+  content: string;
+  messageId: string;
+}
+
 export const messagesServices = {
   async getMessages({ userId, contactId }: MessageProps) {
     const contactExists = await contactsRepository.getOneContact({
@@ -79,9 +86,16 @@ export const messagesServices = {
 
     if (!messageDeleted) throw new CustomError("Internal server error", 404);
 
-    return messageDeleted;
+    return { messageUpdated: true };
   },
-  async updateMessages({ userId, contactId, messageId }: DeleteMessage) {
+  async updateMessages({
+    userId,
+    contactId,
+    messageId,
+    content,
+    contentType,
+    sentAt,
+  }: UpdateMessages) {
     const messageExists = await messageRepository.findOneMessage({
       userId,
       contactId,
@@ -89,14 +103,17 @@ export const messagesServices = {
     });
     if (!messageExists) throw new CustomError("Message not found", 404);
 
-    const messageDeleted = await messageRepository.deleteMessages({
+    const messageUpdated = await messageRepository.updateMessages({
       userId,
       contactId,
       messageId,
+      content,
+      contentType,
+      sentAt,
     });
 
-    if (!messageDeleted) throw new CustomError("Internal server error", 404);
+    if (!messageUpdated) throw new CustomError("Internal server error", 404);
 
-    return messageDeleted;
+    return messageUpdated;
   },
 };

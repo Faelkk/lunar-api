@@ -13,5 +13,5 @@ export const DeleteMessageDto = ({
     throw new CustomError("ContactId and MessageId are required", 400);
   }
 
-  return { contactId };
+  return { contactId, messageId };
 };

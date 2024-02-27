@@ -41,7 +41,7 @@ export const contactsRepository = {
     const result = await sql`
   INSERT INTO invites (sender_id, receiver_id, accepted)
   VALUES (${userId}, ${contactId}, false)
-  ON CONFLICT (receiver_id) DO NOTHING;
+  ON CONFLICT (receiver_id) DO NOTHING RETURNING *;
 `;
 
     return result;
@@ -60,7 +60,7 @@ export const contactsRepository = {
     userName,
   }: ContactCreateProps) {
     const result =
-      await sql`INSERT INTO contacts (user_id,icon,username,contactid) VALUES (${userId},${icon},${userName},${contactId})`;
+      await sql`INSERT INTO contacts (user_id,icon,username,contactid) VALUES (${userId},${icon},${userName},${contactId}) RETURNING *`;
 
     return result;
   },

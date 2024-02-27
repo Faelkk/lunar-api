@@ -6,10 +6,14 @@ export interface sendMessageProps {
   content: string;
 }
 
-export const sendMessageDto = ({ contactId }: sendMessageProps) => {
-  if (!contactId) {
-    throw new CustomError("ContactId is required", 400);
+export const sendMessageDto = ({
+  contactId,
+  content,
+  contentType,
+}: sendMessageProps) => {
+  if (!contactId && !content && !contentType) {
+    throw new CustomError("All fields are required", 400);
   }
 
-  return { contactId };
+  return { contactId, content, contentType };
 };

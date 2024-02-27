@@ -36,7 +36,7 @@ export const contactsService = {
 
     if (!inviteId) throw new CustomError("Internal server error", 500);
 
-    return { inviteId };
+    return inviteId;
   },
   async deleteContact({ userId, contactId }: ContactsProps) {
     const contactExists = await contactsRepository.findContact(userId);

@@ -17,7 +17,7 @@ export const SignupnDTO = ({
 }: SignupDTOprops) => {
   if (!email || !name || !password || !username) {
     throw new CustomError(
-      "Name,email and userName and password are required",
+      "Name,email and username and password are required",
       400
     );
   }

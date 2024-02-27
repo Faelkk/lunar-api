@@ -33,13 +33,15 @@ export const invitesService = {
 
     const newContactInfo = await usersRepository.findUser(invite);
 
-    await contactsRepository.createContact({
+    const createdContact = await contactsRepository.createContact({
       userId,
       contactId: newContactInfo.id,
       userName: newContactInfo.userName,
       icon: newContactInfo.icon,
     });
 
-    return { invite: true };
+    if (!createdContact) throw new CustomError("Internal server error", 500);
+
+    return createdContact;
   },
 };

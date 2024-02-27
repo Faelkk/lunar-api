@@ -6,6 +6,7 @@ import {
 import { DeleteMessageDtoProps } from "./dto/DeleteMessageDto";
 import { MessagesDTOprops } from "./dto/MessagesDto";
 import { sendMessageProps } from "./dto/SendMessagesDto";
+import { UpdateMessageDtoProps } from "./dto/UpdateMessagesDto";
 
 import { messagesServices } from "./messagesServices";
 
@@ -71,12 +72,18 @@ export const messagesController = {
   },
   async updateMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId, messageId } = req.body as DeleteMessageDtoProps;
+    const { contactId, messageId, content, contentType } =
+      req.body as UpdateMessageDtoProps;
+    const sentAt = new Date();
+
     try {
       const updatedMessage = await messagesServices.updateMessages({
         userId,
         contactId,
         messageId,
+        content,
+        contentType,
+        sentAt,
       });
 
       return res.send!(200, updatedMessage);
