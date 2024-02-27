@@ -7,6 +7,7 @@ import { activeCors } from "./shared/helpers/activeCors";
 import { handlePreflightRequest } from "./handlers/handlePreflightRequest";
 import { CustomServerResponse } from "./shared/types/httpType";
 import { authMiddleware } from "./shared/middlewares/authMiddleware";
+import { Server } from "socket.io";
 
 const server = http.createServer(
   async (req: http.IncomingMessage, res: CustomServerResponse) => {

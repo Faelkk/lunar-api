@@ -1,8 +1,6 @@
-import { authMiddleware } from "../shared/middlewares/authMiddleware";
 import { contactsController } from "../modules/contacts/contactsController";
 import { messagesController } from "../modules/messages/messagesController";
 import { usersController } from "../modules/users/usersController";
-import { bodyParserMiddleware } from "../shared/middlewares/bodyParserMiddleware";
 import { invitesController } from "../modules/invites/invitesController";
 
 export const routes = [
@@ -67,5 +65,10 @@ export const routes = [
     endpoint: "messages/:id",
     method: "DELETE",
     handlers: messagesController.deleteMessage,
+  },
+  {
+    endpoint: "messages/:id",
+    method: "PUT",
+    handlers: messagesController.updateMessage,
   },
 ];
