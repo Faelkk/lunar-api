@@ -1,6 +1,13 @@
 import CustomError from "../../../shared/utils/customError";
 
 export interface UpdateMessageDtoProps {
+  contactIdDto: string;
+  contentTypeDto: string;
+  contentDto: string;
+  messageIdDto: string;
+}
+
+export interface UpdateMessageControllerDto {
   contactId: string;
   contentType: string;
   content: string;
@@ -8,14 +15,19 @@ export interface UpdateMessageDtoProps {
 }
 
 export const UpdateMessageDto = ({
-  contactId,
-  content,
-  contentType,
-  messageId,
+  contactIdDto,
+  contentDto,
+  contentTypeDto,
+  messageIdDto,
 }: UpdateMessageDtoProps) => {
-  if (!contactId && !content && !contentType && !messageId) {
+  if (!contactIdDto && !contentDto && !contentTypeDto && !messageIdDto) {
     throw new CustomError("All fields are  required", 400);
   }
 
-  return { contactId, content, contentType, messageId };
+  return {
+    contactId: contactIdDto,
+    content: contentDto,
+    contentType: contentTypeDto,
+    messageId: messageIdDto,
+  };
 };

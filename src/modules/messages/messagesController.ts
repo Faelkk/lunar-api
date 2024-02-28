@@ -3,21 +3,21 @@ import {
   CustomIncomingMessage,
   CustomServerResponse,
 } from "../../shared/types/httpType";
-import { DeleteMessageDtoProps } from "./dto/DeleteMessageDto";
-import { MessagesDTOprops } from "./dto/MessagesDto";
-import { sendMessageProps } from "./dto/SendMessagesDto";
-import { UpdateMessageDtoProps } from "./dto/UpdateMessagesDto";
+import { DeleteMessageControllerDto } from "./dto/DeleteMessageDto";
+import { MessagesControllerDto } from "./dto/MessagesDto";
+import { sendMessageControllerDto } from "./dto/SendMessagesDto";
+import { UpdateMessageControllerDto } from "./dto/UpdateMessagesDto";
 
 import { messagesServices } from "./messagesServices";
 
 export const messagesController = {
   async getMessages(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId } = req.body as MessagesDTOprops;
+    const { contactId } = req.body as MessagesControllerDto;
     try {
       const messages = await messagesServices.getMessages({
         userId,
-        contactId,
+        contactIdDto: contactId,
       });
 
       return res.send!(200, messages);
@@ -31,15 +31,16 @@ export const messagesController = {
 
   async sendMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId, contentType, content } = req.body as sendMessageProps;
+    const { contactId, contentType, content } =
+      req.body as sendMessageControllerDto;
 
     const sentAt = new Date();
     try {
       const messages = await messagesServices.sendMessages({
         userId,
-        contactId,
-        contentType,
-        content,
+        contactIdDto: contactId,
+        contentTypeDto: contentType,
+        contentDto: content,
         sentAt,
       });
 
@@ -54,12 +55,12 @@ export const messagesController = {
 
   async deleteMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId, messageId } = req.body as DeleteMessageDtoProps;
+    const { contactId, messageId } = req.body as DeleteMessageControllerDto;
     try {
       const deletedMessage = await messagesServices.deleteMessages({
         userId,
-        contactId,
-        messageId,
+        contactIdDto: contactId,
+        messageIdDto: messageId,
       });
 
       return res.send!(200, deletedMessage);
@@ -73,16 +74,16 @@ export const messagesController = {
   async updateMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
     const { contactId, messageId, content, contentType } =
-      req.body as UpdateMessageDtoProps;
+      req.body as UpdateMessageControllerDto;
     const sentAt = new Date();
 
     try {
       const updatedMessage = await messagesServices.updateMessages({
         userId,
-        contactId,
-        messageId,
-        content,
-        contentType,
+        contactIdDto: contactId,
+        messageIdDto: messageId,
+        contentDto: content,
+        contentTypeDto: contentType,
         sentAt,
       });
 

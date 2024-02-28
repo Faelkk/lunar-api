@@ -1,33 +1,38 @@
 import { contactsRepository } from "../../shared/database/repositories/contacts.repository";
 import { messageRepository } from "../../shared/database/repositories/messages.repository";
 import CustomError from "../../shared/utils/customError";
+import { DeleteMessageDto } from "./dto/DeleteMessageDto";
+import { MessagesDTO } from "./dto/MessagesDto";
+import { sendMessageDto } from "./dto/SendMessagesDto";
+import { UpdateMessageDto } from "./dto/UpdateMessagesDto";
 
 interface MessageProps {
   userId: string;
-  contactId: string;
+  contactIdDto: string;
 }
 
 interface SendMessage extends MessageProps {
   userId: string;
-  contactId: string;
-  contentType: string;
-  content: string;
+  contactIdDto: string;
+  contentTypeDto: string;
+  contentDto: string;
   sentAt: Date;
 }
 
 interface DeleteMessage extends MessageProps {
-  messageId: string;
+  messageIdDto: string;
 }
 
 interface UpdateMessages extends MessageProps {
   sentAt: Date;
-  contentType: string;
-  content: string;
-  messageId: string;
+  contentTypeDto: string;
+  contentDto: string;
+  messageIdDto: string;
 }
 
 export const messagesServices = {
-  async getMessages({ userId, contactId }: MessageProps) {
+  async getMessages({ userId, contactIdDto }: MessageProps) {
+    const { contactId } = MessagesDTO({ contactIdDto });
     const contactExists = await contactsRepository.getOneContact({
       userId,
       contactId,
@@ -45,11 +50,17 @@ export const messagesServices = {
   },
   async sendMessages({
     userId,
-    contactId,
-    contentType,
-    content,
+    contactIdDto,
+    contentTypeDto,
+    contentDto,
     sentAt,
   }: SendMessage) {
+    const { contactId, content, contentType } = sendMessageDto({
+      contactIdDto,
+      contentTypeDto,
+      contentDto,
+    });
+
     const contactExists = await contactsRepository.getOneContact({
       userId,
       contactId,
@@ -69,7 +80,11 @@ export const messagesServices = {
 
     return messageSend;
   },
-  async deleteMessages({ userId, contactId, messageId }: DeleteMessage) {
+  async deleteMessages({ userId, contactIdDto, messageIdDto }: DeleteMessage) {
+    const { contactId, messageId } = DeleteMessageDto({
+      contactIdDto,
+      messageIdDto,
+    });
     const messageExists = await messageRepository.findOneMessage({
       userId,
       contactId,
@@ -90,12 +105,19 @@ export const messagesServices = {
   },
   async updateMessages({
     userId,
-    contactId,
-    messageId,
-    content,
-    contentType,
+    contactIdDto,
+    messageIdDto,
+    contentDto,
+    contentTypeDto,
     sentAt,
   }: UpdateMessages) {
+    const { contactId, content, contentType, messageId } = UpdateMessageDto({
+      contactIdDto,
+      contentDto,
+      contentTypeDto,
+      messageIdDto,
+    });
+
     const messageExists = await messageRepository.findOneMessage({
       userId,
       contactId,
