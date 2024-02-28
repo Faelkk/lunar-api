@@ -3,10 +3,11 @@ import { invitesRepository } from "../../shared/database/repositories/invites.re
 import { usersRepository } from "../../shared/database/repositories/users.repository";
 
 import CustomError from "../../shared/utils/customError";
+import { InviteDto } from "./dto/inviteDto";
 
 interface InviteProps {
   userId: string;
-  inviteId: string;
+  inviteIdDto: string;
 }
 
 export const invitesService = {
@@ -17,7 +18,8 @@ export const invitesService = {
 
     return invites;
   },
-  async acceptInvite({ userId, inviteId }: InviteProps) {
+  async acceptInvite({ userId, inviteIdDto }: InviteProps) {
+    const { inviteId } = InviteDto({ inviteIdDto });
     const inviteExists = await invitesRepository.findInvite({
       userId,
       inviteId,

@@ -1,9 +1,10 @@
 import { contactsRepository } from "../../shared/database/repositories/contacts.repository";
 import CustomError from "../../shared/utils/customError";
+import { ContactDto } from "./dto/ContactDto";
 
 interface ContactsProps {
   userId: string;
-  contactId: string;
+  contactIdDto: string;
 }
 
 export const contactsService = {
@@ -14,7 +15,9 @@ export const contactsService = {
 
     return contacts;
   },
-  async getOneContact({ userId, contactId }: ContactsProps) {
+  async getOneContact({ userId, contactIdDto }: ContactsProps) {
+    const { contactId } = ContactDto({ contactIdDto });
+
     const contact = await contactsRepository.getOneContact({
       userId,
       contactId,
@@ -24,7 +27,8 @@ export const contactsService = {
 
     return contact;
   },
-  async addContacts({ userId, contactId }: ContactsProps) {
+  async addContacts({ userId, contactIdDto }: ContactsProps) {
+    const { contactId } = ContactDto({ contactIdDto });
     const contactExists = await contactsRepository.findContact(userId);
 
     if (!contactExists) throw new CustomError("Contact not found", 404);
@@ -38,7 +42,8 @@ export const contactsService = {
 
     return inviteId;
   },
-  async deleteContact({ userId, contactId }: ContactsProps) {
+  async deleteContact({ userId, contactIdDto }: ContactsProps) {
+    const { contactId } = ContactDto({ contactIdDto });
     const contactExists = await contactsRepository.findContact(userId);
 
     if (!contactExists) throw new CustomError("contact not found", 404);

@@ -4,7 +4,7 @@ import {
   CustomServerResponse,
 } from "../../shared/types/httpType";
 import { contactsService } from "./contactsService";
-import { ContactDtoProps } from "./dto/ContactDto";
+import { ContactDtoController } from "./dto/ContactDto";
 
 export const contactsController = {
   async getContacts(req: CustomIncomingMessage, res: CustomServerResponse) {
@@ -20,9 +20,9 @@ export const contactsController = {
   },
   async getOneContact(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId } = req.body as ContactDtoProps;
+    const { contactId } = req.body as ContactDtoController;
     try {
-      await contactsService.getOneContact({ userId, contactId });
+      await contactsService.getOneContact({ userId, contactIdDto: contactId });
     } catch (err: any) {
       return res.send!(
         err.statusCode,
@@ -32,9 +32,9 @@ export const contactsController = {
   },
   async addContacts(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId } = req.body as ContactDtoProps;
+    const { contactId } = req.body as ContactDtoController;
     try {
-      await contactsService.addContacts({ userId, contactId });
+      await contactsService.addContacts({ userId, contactIdDto: contactId });
     } catch (err: any) {
       return res.send!(
         err.statusCode,
@@ -44,9 +44,9 @@ export const contactsController = {
   },
   async deleteContact(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId } = req.body as ContactDtoProps;
+    const { contactId } = req.body as ContactDtoController;
     try {
-      await contactsService.deleteContact({ userId, contactId });
+      await contactsService.deleteContact({ userId, contactIdDto: contactId });
     } catch (err: any) {
       return res.send!(
         err.statusCode,

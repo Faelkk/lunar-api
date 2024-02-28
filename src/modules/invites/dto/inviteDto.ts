@@ -5,10 +5,14 @@ export interface InviteDtoProps {
   contactId: string;
 }
 
-export const InviteDto = ({ inviteId, contactId }: InviteDtoProps) => {
-  if (!inviteId && !contactId) {
-    throw new CustomError("inviteId and contactId are required", 400);
+export interface InviteControllerDto {
+  inviteIdDto: string;
+}
+
+export const InviteDto = ({ inviteIdDto }: InviteControllerDto) => {
+  if (!inviteIdDto) {
+    throw new CustomError("inviteId  are required", 400);
   }
 
-  return { inviteId };
+  return { inviteId: inviteIdDto };
 };

@@ -24,7 +24,10 @@ export const invitesController = {
     const { userId } = await ActiveUserId(req);
     const { inviteId } = req.body as InviteDtoProps;
     try {
-      const invited = await invitesService.acceptInvite({ userId, inviteId });
+      const invited = await invitesService.acceptInvite({
+        userId,
+        inviteIdDto: inviteId,
+      });
 
       return res.send!(200, invited);
     } catch (err: any) {
