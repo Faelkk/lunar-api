@@ -1,50 +1,16 @@
 import sql from "../../../connect/connection";
-
-interface signinResponse {
-  id: string;
-  email: string;
-  password: string;
-  apiKey: string;
-}
-
-interface SignupDtoData {
-  name: string;
-  email: string;
-  password: string;
-  username: string;
-  icon?: string;
-}
-
-interface SignupResponse {
-  name: string;
-  email: string;
-  password: string;
-  username: string;
-  icon: string | null;
-  id: string;
-}
-
-interface ApiKeyDto {
-  apiKey: string;
-  userId: string;
-}
-
-interface ApiKeyResponse {
-  user_id: string;
-  id: string;
-  api_key: string;
-  createdAt: Date;
-}
-
-interface userResponse {
-  userName: string;
-  icon: string;
-  id: string;
-}
+import {
+  SigninResponse,
+  SignupDtoData,
+  SignupResponse,
+  ApiKeyDto,
+  ApiKeyResponse,
+  UserResponse,
+} from "../../types/UsersType";
 
 export const usersRepository = {
   async findUnique(email: string) {
-    const result: signinResponse[] =
+    const result: SigninResponse[] =
       await sql`SELECT email FROM users WHERE email = ${email}`;
 
     return result[0];
@@ -55,29 +21,32 @@ export const usersRepository = {
 
     const result: SignupResponse[] = await sql`
       INSERT INTO users(email, name, password, username, icon)  
-      VALUES (${email}, ${name}, ${password}, ${username}, ${icon || null} )
+      VALUES (${email}, ${name}, ${password}, ${username}, ${icon} )
       RETURNING id, email, password, username, icon`;
 
     return result[0];
   },
+
   async createApiKey(apiKeyDto: ApiKeyDto) {
     const { apiKey, userId } = apiKeyDto;
 
     const apiKeyResult: ApiKeyResponse[] = await sql`
-    INSERT INTO api_keys (api_key, user_id) VALUES (${apiKey}, ${userId}) RETURNING *
-  `;
+      INSERT INTO api_keys (api_key, user_id) VALUES (${apiKey}, ${userId}) RETURNING *
+    `;
 
     return apiKeyResult[0];
   },
+
   async findApiKey(userId: string) {
     const apiKey: ApiKeyResponse[] =
       await sql`SELECT * FROM api_keys WHERE user_id = ${userId}`;
 
     return apiKey[0];
   },
+
   async findUser(userId: string) {
-    const result: userResponse[] =
-      await sql`SELECT id,username,icon FROM users WHERE id = ${userId}`;
+    const result: UserResponse[] =
+      await sql`SELECT id, username, icon FROM users WHERE id = ${userId}`;
 
     return result[0];
   },

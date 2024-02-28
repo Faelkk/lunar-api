@@ -1,12 +1,8 @@
 import sql from "../../../connect/connection";
-
-interface InviteProps {
-  userId: string;
-  inviteId: string;
-}
+import { InvitesDto } from "../../types/InvitesType";
 
 export const invitesRepository = {
-  async findInvite({ userId, inviteId }: InviteProps) {
+  async findInvite({ userId, inviteId }: InvitesDto) {
     const result =
       await sql`SELECT * FROM invites WHERE  id = ${inviteId} AND userId = ${userId}`;
 
@@ -18,7 +14,7 @@ export const invitesRepository = {
 
     return result;
   },
-  async acceptInvite({ userId, inviteId }: InviteProps) {
+  async acceptInvite({ userId, inviteId }: InvitesDto) {
     const result = await sql`
         UPDATE invites
         SET accepted = true

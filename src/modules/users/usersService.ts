@@ -14,7 +14,7 @@ interface SigninProps {
 
 interface SignupProps extends SigninProps {
   name: string;
-  icon: string | undefined;
+  icon: string;
   username: string;
 }
 

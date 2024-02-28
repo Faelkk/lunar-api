@@ -26,7 +26,7 @@ export const usersController = {
   },
 
   async signup(req: CustomIncomingMessage, res: CustomServerResponse) {
-    const icon = req.fileUrl;
+    const icon = req.fileUrl as string;
     const { email, password, name, username } = req.body as SignupDTOprops;
 
     try {

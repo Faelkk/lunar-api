@@ -1,28 +1,13 @@
 import sql from "../../../connect/connection";
-
-interface MessageProps {
-  userId: string;
-  contactId: string;
-}
-
-interface SendMessageProps extends MessageProps {
-  userId: string;
-  contactId: string;
-  contentType: string;
-  content: string;
-  sentAt: Date;
-}
-
-interface MessageBodyProps extends MessageProps {
-  messageId: string;
-}
-
-interface UpdateMessageBody extends SendMessageProps {
-  messageId: string;
-}
+import {
+  MessageBase,
+  SendMessageDto,
+  UpdateMessageDto,
+  MessageIdDtoBase,
+} from "../../types/MessagesTypes";
 
 export const messageRepository = {
-  async getMessages({ userId, contactId }: MessageProps) {
+  async getMessages({ userId, contactId }: MessageBase) {
     const response = await sql`
     SELECT *
     FROM messages
@@ -33,7 +18,7 @@ export const messageRepository = {
 
     return response;
   },
-  async findOneMessage({ userId, contactId, messageId }: MessageBodyProps) {
+  async findOneMessage({ userId, contactId, messageId }: MessageIdDtoBase) {
     const response = await sql`
     SELECT *
     FROM messages
@@ -48,14 +33,14 @@ export const messageRepository = {
     contentType,
     content,
     sentAt,
-  }: SendMessageProps) {
+  }: SendMessageDto) {
     const response =
       await sql`INSERT INTO  messages (sender_id,receiver_id,content_type,content,sent_at) VALUES (${userId}, ${contactId}, ${contentType}, ${content}, ${sentAt}) RETURNING *
       `;
 
     return response;
   },
-  async deleteMessages({ userId, contactId, messageId }: MessageBodyProps) {
+  async deleteMessages({ userId, contactId, messageId }: MessageIdDtoBase) {
     const response =
       await sql`DELETE FROM messages WHERE id = ${messageId} AND sender_id = ${userId} AND receiver_id = ${contactId}`;
 
@@ -67,7 +52,7 @@ export const messageRepository = {
     messageId,
     content,
     contentType,
-  }: UpdateMessageBody) {
+  }: UpdateMessageDto) {
     const response =
       await sql`UPDATE messages   SET content = ${content}, content_type = ${contentType}  WHERE id = ${messageId} AND sender_id = ${userId} AND receiver_id = ${contactId}
       RETURNING *`;

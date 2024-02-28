@@ -5,7 +5,7 @@ export interface SignupDTOprops {
   name: string;
   password: string;
   username: string;
-  icon: string | undefined;
+  icon: string;
 }
 
 export const SignupnDTO = ({

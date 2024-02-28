@@ -1,20 +1,9 @@
 import sql from "../../../connect/connection";
-
-interface contactResponse {
-  id: string;
-}
-
-interface ContactProps {
-  userId: string;
-  contactId: string;
-}
-
-interface ContactCreateProps {
-  contactId: string;
-  userId: string;
-  icon: string;
-  userName: string;
-}
+import {
+  ContactCreateDto,
+  ContactDto,
+  contactResponse,
+} from "../../types/ContactTypes";
 
 export const contactsRepository = {
   async findContact(contactId: string) {
@@ -30,14 +19,14 @@ export const contactsRepository = {
     return result;
   },
 
-  async getOneContact({ userId, contactId }: ContactProps) {
+  async getOneContact({ userId, contactId }: ContactDto) {
     const result =
       await sql`SELECT * FROM contacts WHERE user_id = ${userId} AND id = ${contactId}`;
 
     return result[0];
   },
 
-  async sendInviteContact({ userId, contactId }: ContactProps) {
+  async sendInviteContact({ userId, contactId }: ContactDto) {
     const result = await sql`
   INSERT INTO invites (sender_id, receiver_id, accepted)
   VALUES (${userId}, ${contactId}, false)
@@ -47,18 +36,13 @@ export const contactsRepository = {
     return result;
   },
 
-  async deleteContact({ userId, contactId }: ContactProps) {
+  async deleteContact({ userId, contactId }: ContactDto) {
     const result =
       await `DELETE FROM contacts WHERE user_id = ${userId} AND id = ${contactId}`;
     return result;
   },
 
-  async createContact({
-    contactId,
-    userId,
-    icon,
-    userName,
-  }: ContactCreateProps) {
+  async createContact({ contactId, userId, icon, userName }: ContactCreateDto) {
     const result =
       await sql`INSERT INTO contacts (user_id,icon,username,contactid) VALUES (${userId},${icon},${userName},${contactId}) RETURNING *`;
 
