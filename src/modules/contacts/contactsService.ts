@@ -1,4 +1,5 @@
 import { contactsRepository } from "../../shared/database/repositories/contacts.repository";
+import { messageRepository } from "../../shared/database/repositories/messages.repository";
 import CustomError from "../../shared/utils/customError";
 import { ContactDto } from "./dto/ContactDto";
 
@@ -47,6 +48,21 @@ export const contactsService = {
     const contactExists = await contactsRepository.findContact(userId);
 
     if (!contactExists) throw new CustomError("contact not found", 404);
+
+    const messageExists = await messageRepository.getMessages({
+      userId,
+      contactId,
+    });
+
+    if (messageExists.length === 0)
+      throw new CustomError("messages not found", 404);
+
+    const deleteMesages = await messageRepository.deleteAllMessages({
+      userId,
+      contactId,
+    });
+
+    if (!deleteMesages) throw new CustomError("Internal server error", 404);
 
     const contacDeleted = await contactsRepository.deleteContact({
       userId,

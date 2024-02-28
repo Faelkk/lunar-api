@@ -1,3 +1,4 @@
+import { io } from "../../main";
 import { ActiveUserId } from "../../shared/helpers/activeUserId";
 import { sendErrorResponse } from "../../shared/helpers/responseError";
 import {
@@ -21,6 +22,8 @@ export const messagesController = {
         contactIdDto: contactId,
       });
 
+      io.emit("messages@new", messages);
+
       return res.send!(200, messages);
     } catch (err: any) {
       return sendErrorResponse(res, err);
@@ -41,6 +44,8 @@ export const messagesController = {
         contentDto: content,
         sentAt,
       });
+
+      io.emit("messages@new", messages);
 
       return res.send!(200, messages);
     } catch (err: any) {
@@ -63,6 +68,24 @@ export const messagesController = {
       return sendErrorResponse(res, err);
     }
   },
+  async deleteAllMessagesContact(
+    req: CustomIncomingMessage,
+    res: CustomServerResponse
+  ) {
+    const { userId } = await ActiveUserId(req);
+    const { contactId } = req.body as DeleteMessageControllerDto;
+    try {
+      const deletedMessage = await messagesServices.deleteAllMessages({
+        userId,
+        contactIdDto: contactId,
+      });
+
+      return res.send!(200, deletedMessage);
+    } catch (err: any) {
+      return sendErrorResponse(res, err);
+    }
+  },
+
   async updateMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
     const { contactId, messageId, content, contentType } =

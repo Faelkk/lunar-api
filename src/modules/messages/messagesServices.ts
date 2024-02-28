@@ -103,6 +103,8 @@ export const messagesServices = {
 
     return { messageUpdated: true };
   },
+  async deleteAllMessages({ userId, contactIdDto }: MessageProps) {},
+
   async updateMessages({
     userId,
     contactIdDto,

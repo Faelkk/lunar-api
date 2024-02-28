@@ -6,7 +6,7 @@ export const invitesRepository = {
     const result =
       await sql`SELECT * FROM invites WHERE  id = ${inviteId} AND userId = ${userId}`;
 
-    return result;
+    return result[0];
   },
   async getInvites(userId: string) {
     const result =

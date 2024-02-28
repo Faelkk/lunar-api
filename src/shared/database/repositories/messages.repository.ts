@@ -4,11 +4,12 @@ import {
   SendMessageDto,
   UpdateMessageDto,
   MessageIdDtoBase,
+  MessageResponse,
 } from "../../types/MessagesTypes";
 
 export const messageRepository = {
   async getMessages({ userId, contactId }: MessageBase) {
-    const response = await sql`
+    const response: MessageResponse[] = await sql`
     SELECT *
     FROM messages
     WHERE (sender_id = ${userId} AND receiver_id = ${contactId})
@@ -25,7 +26,7 @@ export const messageRepository = {
     WHERE id = ${messageId}  AND sender_id = ${userId} AND receiver_id = ${contactId}
   `;
 
-    return response;
+    return response[0];
   },
   async sendMessages({
     userId,
@@ -43,6 +44,17 @@ export const messageRepository = {
   async deleteMessages({ userId, contactId, messageId }: MessageIdDtoBase) {
     const response =
       await sql`DELETE FROM messages WHERE id = ${messageId} AND sender_id = ${userId} AND receiver_id = ${contactId}`;
+
+    return response;
+  },
+  async deleteAllMessages({ userId, contactId }: MessageBase) {
+    const response = await sql`
+    DELETE FROM messages 
+    WHERE 
+      (sender_id = ${userId} AND receiver_id = ${contactId}) 
+      OR 
+      (sender_id = ${contactId} AND receiver_id = ${userId})
+  `;
 
     return response;
   },

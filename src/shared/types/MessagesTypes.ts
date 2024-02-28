@@ -20,3 +20,12 @@ export interface UpdateMessageDto extends SendMessageDto {
 export interface MessageIdDtoBase extends MessageBase {
   messageId: string;
 }
+
+export interface MessageResponse extends MessageBase {
+  id: string;
+  sender_id: string;
+  receiver_Id: string;
+  contentType: string;
+  content: string;
+  sentAt: Date;
+}

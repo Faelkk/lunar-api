@@ -50,6 +50,8 @@ const server = http.createServer(
   }
 );
 
+export const io = new Server(server);
+
 server.listen(3000, () => {
   console.log("server is open");
 });
