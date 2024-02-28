@@ -26,6 +26,8 @@ export function handleRoutes({ req, res, route }: handleRoutesProps) {
   res.send = (statusCode: number, body?: unknown) =>
     sendJsonResponse({ res, statusCode, body });
 
+  console.log(route.endpoint);
+
   if (["POST", "PUT", "PATCH"].includes(req.method!)) {
     if (
       req.headers["content-type"] &&

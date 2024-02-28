@@ -50,4 +50,15 @@ export const usersRepository = {
 
     return result[0];
   },
+  async editIconUser(userId: string, icon: string) {
+    const result =
+      await sql`UPDATE users SET icon = ${icon} WHERE id = ${userId} RETURNING *`;
+    return result[0];
+  },
+
+  async editUserName(userId: string, username: string) {
+    const result =
+      await sql`UPDATE users SET username = ${username} WHERE id = ${userId} RETURNING *`;
+    return result[0];
+  },
 };

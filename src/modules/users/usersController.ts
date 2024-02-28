@@ -6,6 +6,7 @@ import {
 import { SigninDTOprops } from "./dto/SigninDto";
 import { SignupDTOprops } from "./dto/SignupDto";
 import { sendErrorResponse } from "../../shared/helpers/responseError";
+import { ActiveUserId } from "../../shared/helpers/activeUserId";
 
 export const usersController = {
   async signin(req: CustomIncomingMessage, res: CustomServerResponse) {
@@ -41,5 +42,34 @@ export const usersController = {
       return sendErrorResponse(res, err);
     }
   },
-  editUser() {},
+  async editUserName(req: CustomIncomingMessage, res: CustomServerResponse) {
+    const { userName } = req.body as { userName: string };
+    const { userId } = await ActiveUserId(req);
+
+    try {
+      const { editedUserName } = await usersService.editUserName({
+        userId,
+        userNameDto: userName,
+      });
+
+      return res.send!(200, { editedUserName });
+    } catch (err: any) {
+      return sendErrorResponse(res, err);
+    }
+  },
+  async editUserIcon(req: CustomIncomingMessage, res: CustomServerResponse) {
+    const icon = req.fileUrl as string;
+    const { userId } = await ActiveUserId(req);
+
+    try {
+      const { editedUserIcon } = await usersService.editUserIcon({
+        userId,
+        iconDto: icon,
+      });
+
+      return res.send!(200, { editedUserIcon });
+    } catch (err: any) {
+      return sendErrorResponse(res, err);
+    }
+  },
 };

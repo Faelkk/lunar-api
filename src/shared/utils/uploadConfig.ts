@@ -8,6 +8,11 @@ export const routeUploadConfig: {
     fieldName: "icon",
     storageName: "icon",
   },
+  "users/editUserName/:userId": {
+    fieldName: "icon",
+    storageName: "icon",
+  },
+
   "/messages": {
     fieldName: "image-messages",
     storageName: "content",

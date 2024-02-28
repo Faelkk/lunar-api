@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import env from "../../shared/config/config";
 import CustomError from "../../shared/utils/customError";
+import { UserEditIconDto } from "./dto/UserEditIconDto";
+import { UserNameEditDto } from "./dto/UserNameEditDto";
 
 interface SigninProps {
   email: string;
@@ -20,6 +22,16 @@ interface SignupProps extends SigninProps {
 
 interface signinResponse extends SigninProps {
   id: string;
+}
+
+interface UserEditIconProps {
+  iconDto: string;
+  userId: string;
+}
+
+interface UserNameEditProps {
+  userNameDto: string;
+  userId: string;
 }
 
 export const usersService = {
@@ -98,5 +110,30 @@ export const usersService = {
     );
 
     return { accessToken, apiKey };
+  },
+  async editUserIcon({ userId, iconDto }: UserEditIconProps) {
+    const { icon } = UserEditIconDto({ iconDto });
+
+    const usersExists = await usersRepository.findUser(userId);
+    if (!usersExists) throw new CustomError("User not found", 404);
+
+    const editedUser = await usersRepository.editIconUser(userId, icon);
+
+    if (!editedUser) throw new CustomError("Internal server error", 404);
+
+    return editedUser;
+  },
+
+  async editUserName({ userId, userNameDto }: UserNameEditProps) {
+    const { username } = UserNameEditDto({ userNameDto });
+
+    const usersExists = await usersRepository.findUser(userId);
+    if (!usersExists) throw new CustomError("User not found", 404);
+
+    const editedUser = await usersRepository.editUserName(userId, username);
+
+    if (!editedUser) throw new CustomError("Internal server error", 404);
+
+    return editedUser;
   },
 };
