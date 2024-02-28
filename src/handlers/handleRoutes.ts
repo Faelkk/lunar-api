@@ -7,6 +7,7 @@ import {
 import { sendJsonResponse } from "../shared/helpers/sendJsonResponse";
 import { routeUploadConfig } from "../shared/utils/uploadConfig";
 import { uploadMiddleware } from "../shared/middlewares/uploadMiddleware";
+import CustomError from "../shared/utils/customError";
 
 interface handleRoutesProps {
   req: CustomIncomingMessage;
@@ -32,6 +33,9 @@ export function handleRoutes({ req, res, route }: handleRoutesProps) {
     ) {
       const { fieldName, storageName } =
         routeUploadConfig[route.endpoint] || {};
+
+      if (!fieldName || !storageName)
+        throw new CustomError("Internal server error", 500);
 
       const uploadHandler = uploadMiddleware(fieldName, storageName);
 

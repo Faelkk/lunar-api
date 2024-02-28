@@ -5,6 +5,7 @@ import {
 } from "../../shared/types/httpType";
 import { SigninDTOprops } from "./dto/SigninDto";
 import { SignupDTOprops } from "./dto/SignupDto";
+import { sendErrorResponse } from "../../shared/helpers/responseError";
 
 export const usersController = {
   async signin(req: CustomIncomingMessage, res: CustomServerResponse) {
@@ -18,10 +19,7 @@ export const usersController = {
 
       return res.send!(200, { accessToken, apiKey });
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
 
@@ -40,10 +38,7 @@ export const usersController = {
 
       return res.send!(200, { accessToken, apiKey });
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
   editUser() {},

@@ -5,6 +5,7 @@ import {
 } from "../../shared/types/httpType";
 import { ActiveUserId } from "../../shared/helpers/activeUserId";
 import { InviteDtoProps } from "./dto/inviteDto";
+import { sendErrorResponse } from "../../shared/helpers/responseError";
 
 export const invitesController = {
   async getInvites(req: CustomIncomingMessage, res: CustomServerResponse) {
@@ -14,10 +15,7 @@ export const invitesController = {
 
       return res.send!(200, invites);
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
   async acceptInvite(req: CustomIncomingMessage, res: CustomServerResponse) {
@@ -31,10 +29,7 @@ export const invitesController = {
 
       return res.send!(200, invited);
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
 };

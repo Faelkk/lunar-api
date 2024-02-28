@@ -1,4 +1,5 @@
 import { ActiveUserId } from "../../shared/helpers/activeUserId";
+import { sendErrorResponse } from "../../shared/helpers/responseError";
 import {
   CustomIncomingMessage,
   CustomServerResponse,
@@ -22,10 +23,7 @@ export const messagesController = {
 
       return res.send!(200, messages);
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
 
@@ -46,10 +44,7 @@ export const messagesController = {
 
       return res.send!(200, messages);
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
 
@@ -65,10 +60,7 @@ export const messagesController = {
 
       return res.send!(200, deletedMessage);
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
   async updateMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
@@ -89,10 +81,7 @@ export const messagesController = {
 
       return res.send!(200, updatedMessage);
     } catch (err: any) {
-      return res.send!(
-        err.statusCode,
-        `Error: ${err.statusCode} ${err.message}`
-      );
+      return sendErrorResponse(res, err);
     }
   },
 };
