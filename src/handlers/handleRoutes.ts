@@ -1,13 +1,14 @@
 import * as http from "http";
-import { bodyParserMiddleware } from "../shared/middlewares/bodyParserMiddleware";
+import { bodyParserMiddleware } from "../shared/middlewares/body/bodyParserMiddleware";
 import {
   CustomIncomingMessage,
   CustomServerResponse,
 } from "../shared/types/httpType";
 import { sendJsonResponse } from "../shared/helpers/sendJsonResponse";
-import { routeUploadConfig } from "../shared/utils/uploadConfig";
-import { uploadMiddleware } from "../shared/middlewares/uploadMiddleware";
+
+import { uploadMiddleware } from "../shared/middlewares/upload/uploadMiddleware";
 import CustomError from "../shared/utils/customError";
+import { routeUploadConfig } from "../shared/middlewares/upload/uploadConfig";
 
 interface handleRoutesProps {
   req: CustomIncomingMessage;
@@ -26,20 +27,16 @@ export function handleRoutes({ req, res, route }: handleRoutesProps) {
   res.send = (statusCode: number, body?: unknown) =>
     sendJsonResponse({ res, statusCode, body });
 
-  console.log(route.endpoint);
+  const routeConfig = routeUploadConfig[route.endpoint];
 
   if (["POST", "PUT", "PATCH"].includes(req.method!)) {
     if (
       req.headers["content-type"] &&
       req.headers["content-type"].startsWith("multipart/form-data")
     ) {
-      const { fieldName, storageName } =
-        routeUploadConfig[route.endpoint] || {};
+      if (!routeConfig) throw new CustomError("Internal server error", 500);
 
-      if (!fieldName || !storageName)
-        throw new CustomError("Internal server error", 500);
-
-      const uploadHandler = uploadMiddleware(fieldName, storageName);
+      const uploadHandler = uploadMiddleware(routeConfig);
 
       uploadHandler({ req, res, next: () => route.handlers(req, res) });
 

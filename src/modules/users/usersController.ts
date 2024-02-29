@@ -39,20 +39,25 @@ export const usersController = {
 
       return res.send!(200, { accessToken, apiKey });
     } catch (err: any) {
+      console.log(err);
+
       return sendErrorResponse(res, err);
     }
   },
   async editUserName(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userName } = req.body as { userName: string };
+
     const { userId } = await ActiveUserId(req);
+    const { id } = req.params as { id: string };
 
     try {
-      const { editedUserName } = await usersService.editUserName({
+      const editedUserName = await usersService.editUserName({
         userId,
         userNameDto: userName,
+        idDto: id,
       });
 
-      return res.send!(200, { editedUserName });
+      return res.send!(200, editedUserName);
     } catch (err: any) {
       return sendErrorResponse(res, err);
     }
@@ -60,14 +65,16 @@ export const usersController = {
   async editUserIcon(req: CustomIncomingMessage, res: CustomServerResponse) {
     const icon = req.fileUrl as string;
     const { userId } = await ActiveUserId(req);
+    const { id } = req.params as { id: string };
 
     try {
-      const { editedUserIcon } = await usersService.editUserIcon({
+      const editedUserIcon = await usersService.editUserIcon({
         userId,
         iconDto: icon,
+        idDto: id,
       });
 
-      return res.send!(200, { editedUserIcon });
+      return res.send!(200, editedUserIcon);
     } catch (err: any) {
       return sendErrorResponse(res, err);
     }

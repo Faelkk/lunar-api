@@ -6,6 +6,7 @@ interface BaseUser {
 export interface SigninResponse extends BaseUser {
   id: string;
   apiKey: string;
+  username: string;
 }
 
 export interface SignupDtoData extends BaseUser {

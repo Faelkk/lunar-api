@@ -16,12 +16,12 @@ export const routes = [
     handlers: usersController.signup,
   },
   {
-    endpoint: "users/editUserIcon/:userId",
+    endpoint: "/editUserIcon/:id",
     method: "PUT",
     handlers: usersController.editUserIcon,
   },
   {
-    endpoint: "users/editUserName/:userId",
+    endpoint: "/editUserName/:id",
     method: "PUT",
     handlers: usersController.editUserName,
   },

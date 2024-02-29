@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import jwt from "jsonwebtoken";
-import sql from "../../connect/connection";
-import env from "../config/config";
+import sql from "../../../connect/connection";
+import env from "../../config/config";
 
 interface AuthMiddlewareParams {
   req: CustomIncomingMessage;
@@ -75,14 +75,14 @@ async function getAndValidateApiKey(req: CustomIncomingMessage) {
 }
 
 function getApiKey(req: CustomIncomingMessage): string | null {
-  return req.headers ? String(req.headers.apiKey) : null;
+  return req.headers ? String(req.headers.apikey) : null;
 }
 
 async function validateApiKey(apiKey: string, req: CustomIncomingMessage) {
   try {
     const result = await sql` 
       SELECT id FROM api_keys
-      WHERE key_value = ${apiKey} AND user_id = ${req.userId!}
+      WHERE api_key = ${apiKey} AND user_id = ${req.userId!}
     `;
 
     return result.length > 0;

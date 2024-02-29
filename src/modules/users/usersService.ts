@@ -27,11 +27,13 @@ interface signinResponse extends SigninProps {
 interface UserEditIconProps {
   iconDto: string;
   userId: string;
+  idDto: string;
 }
 
 interface UserNameEditProps {
   userNameDto: string;
   userId: string;
+  idDto: string;
 }
 
 export const usersService = {
@@ -74,8 +76,16 @@ export const usersService = {
       signupDtoData.email
     );
 
-    if (userAlreadyExists) {
+    if (userAlreadyExists && userAlreadyExists.email) {
       throw new CustomError("User already exists", 409);
+    }
+
+    const userNameAlreadyBeingUsed = await usersRepository.findUserName(
+      signupDtoData.username
+    );
+
+    if (userNameAlreadyBeingUsed && userNameAlreadyBeingUsed.username) {
+      throw new CustomError("Username already being used", 409);
     }
 
     const newapiKey = crypto.randomBytes(16).toString("hex");
@@ -111,11 +121,19 @@ export const usersService = {
 
     return { accessToken, apiKey };
   },
-  async editUserIcon({ userId, iconDto }: UserEditIconProps) {
-    const { icon } = UserEditIconDto({ iconDto });
+  async editUserIcon({ userId, iconDto, idDto }: UserEditIconProps) {
+    const { icon, id } = UserEditIconDto({ iconDto, idDto });
 
     const usersExists = await usersRepository.findUser(userId);
-    if (!usersExists) throw new CustomError("User not found", 404);
+    if (!usersExists) {
+      throw new CustomError("User not found", 404);
+    }
+
+    if (id !== userId) {
+      console.log(id, userId);
+
+      throw new CustomError("Unauthorized operation", 403);
+    }
 
     const editedUser = await usersRepository.editIconUser(userId, icon);
 
@@ -124,11 +142,25 @@ export const usersService = {
     return editedUser;
   },
 
-  async editUserName({ userId, userNameDto }: UserNameEditProps) {
-    const { username } = UserNameEditDto({ userNameDto });
+  async editUserName({ userId, userNameDto, idDto }: UserNameEditProps) {
+    const { username, id } = UserNameEditDto({ userNameDto, idDto });
 
     const usersExists = await usersRepository.findUser(userId);
-    if (!usersExists) throw new CustomError("User not found", 404);
+    if (!usersExists) {
+      throw new CustomError("User not found", 404);
+    }
+
+    if (id !== userId) {
+      throw new CustomError("Unauthorized operation", 403);
+    }
+
+    const userNameAlreadyBeingUsed = await usersRepository.findUserName(
+      username
+    );
+
+    if (userNameAlreadyBeingUsed && userNameAlreadyBeingUsed.username) {
+      throw new CustomError("Username already being used", 409);
+    }
 
     const editedUser = await usersRepository.editUserName(userId, username);
 

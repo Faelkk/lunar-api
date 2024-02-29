@@ -6,7 +6,7 @@ import { handleRoutes } from "./handlers/handleRoutes";
 import { activeCors } from "./shared/helpers/activeCors";
 import { handlePreflightRequest } from "./handlers/handlePreflightRequest";
 import { CustomServerResponse } from "./shared/types/httpType";
-import { authMiddleware } from "./shared/middlewares/authMiddleware";
+import { authMiddleware } from "./shared/middlewares/auth/authMiddleware";
 import { Server } from "socket.io";
 
 const server = http.createServer(
@@ -28,6 +28,9 @@ const server = http.createServer(
       }
 
       const route = routes.find((routeOBJ) => {
+        console.log(routeOBJ.endpoint);
+        console.log(pathname, "pathnameeee");
+
         return routeOBJ.endpoint === pathname && routeOBJ.method === req.method;
       });
 

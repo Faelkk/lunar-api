@@ -11,7 +11,14 @@ import {
 export const usersRepository = {
   async findUnique(email: string) {
     const result: SigninResponse[] =
-      await sql`SELECT email FROM users WHERE email = ${email}`;
+      await sql`SELECT * FROM users WHERE email = ${email}`;
+
+    return result[0];
+  },
+
+  async findUserName(userName: string) {
+    const result: SigninResponse[] =
+      await sql`SELECT * FROM users WHERE username = ${userName}`;
 
     return result[0];
   },
@@ -58,7 +65,7 @@ export const usersRepository = {
 
   async editUserName(userId: string, username: string) {
     const result =
-      await sql`UPDATE users SET username = ${username} WHERE id = ${userId} RETURNING *`;
+      await sql`UPDATE users SET username = ${username} WHERE id = ${userId} RETURNING username`;
     return result[0];
   },
 };
