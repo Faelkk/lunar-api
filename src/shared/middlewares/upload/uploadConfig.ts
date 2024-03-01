@@ -16,15 +16,14 @@ export const routeUploadConfig: {
     allowedTypes: ["image/jpeg", "image/jpg", "image/png"],
   },
 
-  "/messages": {
-    fieldName: "image-messages",
-    storageName: "content",
-    allowedTypes: [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "video/mp4",
-      "audio/mp3",
-    ],
+  "/messages/image": {
+    fieldName: "content",
+    storageName: "image-messages",
+    allowedTypes: ["image/jpeg", "image/jpg", "image/png"],
+  },
+  "/messages/voice": {
+    fieldName: "content",
+    storageName: "audio-messages  ",
+    allowedTypes: ["audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg"],
   },
 };

@@ -3,6 +3,8 @@ import { messageRepository } from "../../shared/database/repositories/messages.r
 import CustomError from "../../shared/utils/customError";
 import { DeleteMessageDto } from "./dto/DeleteMessageDto";
 import { MessagesDTO } from "./dto/MessagesDto";
+import { sendAudioDto } from "./dto/SendAudioDto";
+import { sendImageDto } from "./dto/SendImageDto";
 import { sendMessageDto } from "./dto/SendMessagesDto";
 import { UpdateMessageDto } from "./dto/UpdateMessagesDto";
 
@@ -16,7 +18,6 @@ interface SendMessage extends MessageProps {
   contactIdDto: string;
   contentTypeDto: string;
   contentDto: string;
-  sentAt: Date;
 }
 
 interface DeleteMessage extends MessageProps {
@@ -24,7 +25,6 @@ interface DeleteMessage extends MessageProps {
 }
 
 interface UpdateMessages extends MessageProps {
-  sentAt: Date;
   contentTypeDto: string;
   contentDto: string;
   messageIdDto: string;
@@ -33,6 +33,7 @@ interface UpdateMessages extends MessageProps {
 export const messagesServices = {
   async getMessages({ userId, contactIdDto }: MessageProps) {
     const { contactId } = MessagesDTO({ contactIdDto });
+
     const contactExists = await contactsRepository.getOneContact({
       userId,
       contactId,
@@ -53,7 +54,6 @@ export const messagesServices = {
     contactIdDto,
     contentTypeDto,
     contentDto,
-    sentAt,
   }: SendMessage) {
     const { contactId, content, contentType } = sendMessageDto({
       contactIdDto,
@@ -75,7 +75,6 @@ export const messagesServices = {
       contactId,
       contentType,
       content,
-      sentAt,
     });
 
     if (!messageSend) {
@@ -109,7 +108,7 @@ export const messagesServices = {
       throw new CustomError("Internal server error", 404);
     }
 
-    return { messageUpdated: true };
+    return { messageDeleted: true };
   },
 
   async deleteAllMessages({ userId, contactIdDto }: MessageProps) {},
@@ -120,7 +119,6 @@ export const messagesServices = {
     messageIdDto,
     contentDto,
     contentTypeDto,
-    sentAt,
   }: UpdateMessages) {
     const { contactId, content, contentType, messageId } = UpdateMessageDto({
       contactIdDto,
@@ -144,7 +142,6 @@ export const messagesServices = {
       messageId,
       content,
       contentType,
-      sentAt,
     });
 
     if (!messageUpdated) {
@@ -152,5 +149,73 @@ export const messagesServices = {
     }
 
     return messageUpdated;
+  },
+  async sendImage({
+    userId,
+    contactIdDto,
+    contentTypeDto,
+    contentDto,
+  }: SendMessage) {
+    const { contactId, content, contentType } = sendImageDto({
+      contactIdDto,
+      contentTypeDto,
+      contentDto,
+    });
+
+    const contactExists = await contactsRepository.getOneContact({
+      userId,
+      contactId,
+    });
+
+    if (!contactExists) {
+      throw new CustomError("Contact Not Found", 404);
+    }
+
+    const messageSend = await messageRepository.sendImage({
+      userId,
+      contactId,
+      contentType,
+      content,
+    });
+
+    if (!messageSend) {
+      throw new CustomError("Internal server error", 500);
+    }
+
+    return messageSend;
+  },
+  async sendVoice({
+    userId,
+    contactIdDto,
+    contentTypeDto,
+    contentDto,
+  }: SendMessage) {
+    const { contactId, content, contentType } = sendAudioDto({
+      contactIdDto,
+      contentTypeDto,
+      contentDto,
+    });
+
+    const contactExists = await contactsRepository.getOneContact({
+      userId,
+      contactId,
+    });
+
+    if (!contactExists) {
+      throw new CustomError("Contact Not Found", 404);
+    }
+
+    const messageSend = await messageRepository.sendVoice({
+      userId,
+      contactId,
+      contentType,
+      content,
+    });
+
+    if (!messageSend) {
+      throw new CustomError("Internal server error", 500);
+    }
+
+    return messageSend;
   },
 };

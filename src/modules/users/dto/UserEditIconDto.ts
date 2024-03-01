@@ -7,7 +7,7 @@ export interface UserEditIconDtoProps {
 }
 
 export const UserEditIconDto = ({ iconDto, idDto }: UserEditIconDtoProps) => {
-  if (!iconDto && idDto) {
+  if (!iconDto || idDto) {
     throw new CustomError("Icon and Id are required", 400);
   }
 

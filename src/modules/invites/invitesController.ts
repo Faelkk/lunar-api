@@ -43,8 +43,6 @@ export const invitesController = {
 
       return res.send!(200, deleted);
     } catch (err: any) {
-      console.log(err);
-
       return sendErrorResponse(res, err);
     }
   },

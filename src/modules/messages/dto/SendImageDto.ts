@@ -1,23 +1,23 @@
 import CustomError from "../../../shared/utils/customError";
 import { isUUID } from "../../../shared/utils/isUUID";
 
-export interface sendMessageProps {
+export interface sendImageProps {
   contactIdDto: string;
   contentTypeDto: string;
   contentDto: string;
 }
 
-export interface sendMessageControllerDto {
+export interface sendImageControllerDto {
   contactId: string;
   contentType: string;
   content: string;
 }
 
-export const sendMessageDto = ({
+export const sendImageDto = ({
   contactIdDto,
   contentTypeDto,
   contentDto,
-}: sendMessageProps) => {
+}: sendImageProps) => {
   if (!contactIdDto || !contentTypeDto || !contentDto) {
     throw new CustomError("All fields are required", 400);
   }
@@ -26,8 +26,8 @@ export const sendMessageDto = ({
     throw new CustomError("must be a valid UUID", 400);
   }
 
-  if (contentTypeDto !== "Text") {
-    throw new CustomError("Content Type must be string", 400);
+  if (contentTypeDto !== "Image") {
+    throw new CustomError("Content Type must be image", 400);
   }
 
   return {

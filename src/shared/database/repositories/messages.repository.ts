@@ -1,7 +1,7 @@
 import sql from "../../../connect/connection";
 import {
   MessageBase,
-  SendMessageDto,
+  MessageDto,
   UpdateMessageDto,
   MessageIdDtoBase,
   MessageResponse,
@@ -15,6 +15,7 @@ export const messageRepository = {
     WHERE (sender_id = ${userId} AND receiver_id = ${contactId})
        OR (sender_id = ${contactId} AND receiver_id = ${userId})
     ORDER BY sent_at;
+
   `;
 
     return response;
@@ -28,15 +29,9 @@ export const messageRepository = {
 
     return response[0];
   },
-  async sendMessages({
-    userId,
-    contactId,
-    contentType,
-    content,
-    sentAt,
-  }: SendMessageDto) {
+  async sendMessages({ userId, contactId, contentType, content }: MessageDto) {
     const response =
-      await sql`INSERT INTO  messages (sender_id,receiver_id,content_type,content,sent_at) VALUES (${userId}, ${contactId}, ${contentType}, ${content}, ${sentAt}) RETURNING *
+      await sql`INSERT INTO  messages (sender_id,receiver_id,content_type,content) VALUES (${userId}, ${contactId}, ${contentType}, ${content}) RETURNING *
       `;
 
     return response;
@@ -68,6 +63,20 @@ export const messageRepository = {
     const response =
       await sql`UPDATE messages   SET content = ${content}, content_type = ${contentType}  WHERE id = ${messageId} AND sender_id = ${userId} AND receiver_id = ${contactId}
       RETURNING *`;
+
+    return response;
+  },
+  async sendImage({ userId, contactId, contentType, content }: MessageDto) {
+    const response =
+      await sql`INSERT INTO  messages (sender_id,receiver_id,content_type,content) VALUES (${userId}, ${contactId}, ${contentType}, ${content}) RETURNING *
+    `;
+
+    return response;
+  },
+  async sendVoice({ userId, contactId, contentType, content }: MessageDto) {
+    const response =
+      await sql`INSERT INTO  messages (sender_id,receiver_id,content_type,content) VALUES (${userId}, ${contactId}, ${contentType}, ${content}) RETURNING *
+    `;
 
     return response;
   },

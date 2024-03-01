@@ -10,8 +10,10 @@ export const contactsRepository = {
   },
 
   async getOneContact({ userId, contactId }: ContactDto) {
-    const result =
-      await sql`SELECT * FROM contacts WHERE inviter_user_id  = ${contactId} AND   accepted_user_id = ${userId}`;
+    const result = await sql`
+    SELECT * FROM contacts
+    WHERE  (inviter_user_id = ${userId} AND accepted_user_id = ${contactId}) OR (inviter_user_id = ${contactId} AND accepted_user_id = ${userId})
+  `;
 
     return result[0];
   },
@@ -28,7 +30,7 @@ export const contactsRepository = {
 
   async deleteContact({ userId, contactId }: ContactDto) {
     const result =
-      await sql`DELETE FROM contacts WHERE inviter_user_id = ${userId} AND id = ${contactId}`;
+      await sql`DELETE FROM contacts  WHERE id = ${contactId} AND (inviter_user_id = ${userId} OR accepted_user_id = ${userId})`;
     return result;
   },
 

@@ -1,4 +1,5 @@
 import CustomError from "../../../shared/utils/customError";
+import { isUUID } from "../../../shared/utils/isUUID";
 
 export interface UpdateMessageDtoProps {
   contactIdDto: string;
@@ -22,6 +23,14 @@ export const UpdateMessageDto = ({
 }: UpdateMessageDtoProps) => {
   if (!contactIdDto && !contentDto && !contentTypeDto && !messageIdDto) {
     throw new CustomError("All fields are  required", 400);
+  }
+
+  if (!isUUID(contactIdDto) || !isUUID(messageIdDto)) {
+    throw new CustomError("must be a valid UUID", 400);
+  }
+
+  if (contentTypeDto !== "Text") {
+    throw new CustomError("Content Type must be string", 400);
   }
 
   return {

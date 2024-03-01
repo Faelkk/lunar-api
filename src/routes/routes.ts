@@ -62,7 +62,7 @@ export const routes = [
     handlers: contactsController.getOneContact,
   },
   {
-    endpoint: "/messages",
+    endpoint: "/messages/:id",
     method: "GET",
     handlers: messagesController.getMessages,
   },
@@ -70,6 +70,16 @@ export const routes = [
     endpoint: "/messages",
     method: "POST",
     handlers: messagesController.sendMessage,
+  },
+  {
+    endpoint: "/messages/image",
+    method: "POST",
+    handlers: messagesController.sendImage,
+  },
+  {
+    endpoint: "/messages/voice",
+    method: "POST",
+    handlers: messagesController.sendVoice,
   },
   {
     endpoint: "/messages/:id",

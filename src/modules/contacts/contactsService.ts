@@ -36,6 +36,11 @@ export const contactsService = {
   },
   async addContacts({ userId, contactIdDto }: ContactsProps) {
     const { contactId } = ContactDto({ contactIdDto });
+
+    if (userId === contactId) {
+      throw new CustomError("Contact not found", 404);
+    }
+
     const userExists = await usersRepository.findUser(contactIdDto);
 
     if (!userExists) {
@@ -73,9 +78,12 @@ export const contactsService = {
   },
   async deleteContact({ userId, contactIdDto }: ContactsProps) {
     const { contactId } = ContactDto({ contactIdDto });
-    const userExists = await usersRepository.findUser(userId);
+    const contactExists = await contactsRepository.getOneContact({
+      userId,
+      contactId,
+    });
 
-    if (!userExists) {
+    if (!contactExists) {
       throw new CustomError("Contact not found", 404);
     }
 

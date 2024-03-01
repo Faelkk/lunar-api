@@ -7,13 +7,12 @@ export interface MessageIdDto extends MessageBase {
   messageId: string;
 }
 
-export interface SendMessageDto extends MessageBase {
+export interface MessageDto extends MessageBase {
   contentType: string;
   content: string;
-  sentAt: Date;
 }
 
-export interface UpdateMessageDto extends SendMessageDto {
+export interface UpdateMessageDto extends MessageDto {
   messageId: string;
 }
 

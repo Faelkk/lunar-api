@@ -15,11 +15,11 @@ import { messagesServices } from "./messagesServices";
 export const messagesController = {
   async getMessages(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId } = req.body as MessagesControllerDto;
+    const { id } = req.params as { id: string };
     try {
       const messages = await messagesServices.getMessages({
         userId,
-        contactIdDto: contactId,
+        contactIdDto: id,
       });
 
       io.emit("messages@new", messages);
@@ -35,14 +35,12 @@ export const messagesController = {
     const { contactId, contentType, content } =
       req.body as sendMessageControllerDto;
 
-    const sentAt = new Date();
     try {
       const messages = await messagesServices.sendMessages({
         userId,
         contactIdDto: contactId,
         contentTypeDto: contentType,
         contentDto: content,
-        sentAt,
       });
 
       io.emit("messages@new", messages);
@@ -55,12 +53,13 @@ export const messagesController = {
 
   async deleteMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId, messageId } = req.body as DeleteMessageControllerDto;
+    const { id } = req.params as { id: string };
+    const { contactId } = req.body as DeleteMessageControllerDto;
     try {
       const deletedMessage = await messagesServices.deleteMessages({
         userId,
         contactIdDto: contactId,
-        messageIdDto: messageId,
+        messageIdDto: id,
       });
 
       return res.send!(200, deletedMessage);
@@ -88,21 +87,60 @@ export const messagesController = {
 
   async updateMessage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId, messageId, content, contentType } =
+    const { id } = req.params as { id: string };
+    const { contactId, content, contentType } =
       req.body as UpdateMessageControllerDto;
-    const sentAt = new Date();
 
     try {
       const updatedMessage = await messagesServices.updateMessages({
         userId,
         contactIdDto: contactId,
-        messageIdDto: messageId,
+        messageIdDto: id,
         contentDto: content,
         contentTypeDto: contentType,
-        sentAt,
       });
 
       return res.send!(200, updatedMessage);
+    } catch (err: any) {
+      return sendErrorResponse(res, err);
+    }
+  },
+  async sendImage(req: CustomIncomingMessage, res: CustomServerResponse) {
+    const { userId } = await ActiveUserId(req);
+    const content = req.fileUrl as string;
+    const { contactId, contentType } = req.body as sendMessageControllerDto;
+
+    try {
+      const messages = await messagesServices.sendImage({
+        userId,
+        contactIdDto: contactId,
+        contentTypeDto: contentType,
+        contentDto: content,
+      });
+
+      io.emit("messages@new", messages);
+
+      return res.send!(200, messages);
+    } catch (err: any) {
+      return sendErrorResponse(res, err);
+    }
+  },
+  async sendVoice(req: CustomIncomingMessage, res: CustomServerResponse) {
+    const { userId } = await ActiveUserId(req);
+    const content = req.fileUrl as string;
+    const { contactId, contentType } = req.body as sendMessageControllerDto;
+
+    try {
+      const messages = await messagesServices.sendVoice({
+        userId,
+        contactIdDto: contactId,
+        contentTypeDto: contentType,
+        contentDto: content,
+      });
+
+      io.emit("messages@new", messages);
+
+      return res.send!(200, messages);
     } catch (err: any) {
       return sendErrorResponse(res, err);
     }
