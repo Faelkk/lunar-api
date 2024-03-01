@@ -31,7 +31,7 @@ export interface ApiKeyResponse {
 }
 
 export interface UserResponse {
-  userName: string;
+  username: string;
   icon: string;
   id: string;
 }

@@ -130,14 +130,14 @@ export const usersService = {
     }
 
     if (id !== userId) {
-      console.log(id, userId);
-
       throw new CustomError("Unauthorized operation", 403);
     }
 
     const editedUser = await usersRepository.editIconUser(userId, icon);
 
-    if (!editedUser) throw new CustomError("Internal server error", 404);
+    if (!editedUser) {
+      throw new CustomError("Internal server error", 404);
+    }
 
     return editedUser;
   },
@@ -164,7 +164,9 @@ export const usersService = {
 
     const editedUser = await usersRepository.editUserName(userId, username);
 
-    if (!editedUser) throw new CustomError("Internal server error", 404);
+    if (!editedUser) {
+      throw new CustomError("Internal server error", 404);
+    }
 
     return editedUser;
   },

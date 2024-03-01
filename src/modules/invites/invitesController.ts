@@ -32,4 +32,20 @@ export const invitesController = {
       return sendErrorResponse(res, err);
     }
   },
+  async rejectInvite(req: CustomIncomingMessage, res: CustomServerResponse) {
+    const { userId } = await ActiveUserId(req);
+    const { inviteId } = req.body as InviteDtoProps;
+    try {
+      const { deleted } = await invitesService.rejectInvite({
+        userId,
+        inviteIdDto: inviteId,
+      });
+
+      return res.send!(200, deleted);
+    } catch (err: any) {
+      console.log(err);
+
+      return sendErrorResponse(res, err);
+    }
+  },
 };

@@ -31,19 +31,41 @@ export const invitesService = {
 
     const invite = await invitesRepository.acceptInvite({ userId, inviteId });
 
-    if (!invite) throw new CustomError("Internal server error", 500);
+    if (!invite) {
+      throw new CustomError("Internal server error", 500);
+    }
 
-    const newContactInfo = await usersRepository.findUser(invite);
+    const { id } = await usersRepository.findUser(invite);
 
     const createdContact = await contactsRepository.createContact({
       userId,
-      contactId: newContactInfo.id,
-      userName: newContactInfo.userName,
-      icon: newContactInfo.icon,
+      contactId: id,
     });
 
     if (!createdContact) throw new CustomError("Internal server error", 500);
 
     return createdContact;
+  },
+  async rejectInvite({ userId, inviteIdDto }: InviteProps) {
+    const { inviteId } = InviteDto({ inviteIdDto });
+    const inviteExists = await invitesRepository.findInvite({
+      userId,
+      inviteId,
+    });
+
+    if (!inviteExists) {
+      throw new CustomError("Invite not found", 404);
+    }
+
+    const invitedRejected = await invitesRepository.rejectInvite({
+      userId,
+      inviteId,
+    });
+
+    if (!invitedRejected) {
+      throw new CustomError("Internal server error", 500);
+    }
+
+    return { deleted: true };
   },
 };

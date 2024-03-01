@@ -53,7 +53,7 @@ export const usersRepository = {
 
   async findUser(userId: string) {
     const result: UserResponse[] =
-      await sql`SELECT id, username, icon FROM users WHERE id = ${userId}`;
+      await sql`SELECT * FROM users WHERE id = ${userId}`;
 
     return result[0];
   },

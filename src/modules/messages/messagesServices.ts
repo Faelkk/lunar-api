@@ -66,7 +66,9 @@ export const messagesServices = {
       contactId,
     });
 
-    if (!contactExists) throw new CustomError("Contact Not Found", 404);
+    if (!contactExists) {
+      throw new CustomError("Contact Not Found", 404);
+    }
 
     const messageSend = await messageRepository.sendMessages({
       userId,
@@ -76,7 +78,9 @@ export const messagesServices = {
       sentAt,
     });
 
-    if (!messageSend) throw new CustomError("Internal server error", 500);
+    if (!messageSend) {
+      throw new CustomError("Internal server error", 500);
+    }
 
     return messageSend;
   },
@@ -91,7 +95,9 @@ export const messagesServices = {
       messageId,
     });
 
-    if (!messageExists) throw new CustomError("Message not found", 404);
+    if (!messageExists) {
+      throw new CustomError("Message not found", 404);
+    }
 
     const messageDeleted = await messageRepository.deleteMessages({
       userId,
@@ -99,10 +105,13 @@ export const messagesServices = {
       messageId,
     });
 
-    if (!messageDeleted) throw new CustomError("Internal server error", 404);
+    if (!messageDeleted) {
+      throw new CustomError("Internal server error", 404);
+    }
 
     return { messageUpdated: true };
   },
+
   async deleteAllMessages({ userId, contactIdDto }: MessageProps) {},
 
   async updateMessages({
@@ -125,7 +134,9 @@ export const messagesServices = {
       contactId,
       messageId,
     });
-    if (!messageExists) throw new CustomError("Message not found", 404);
+    if (!messageExists) {
+      throw new CustomError("Message not found", 404);
+    }
 
     const messageUpdated = await messageRepository.updateMessages({
       userId,
@@ -136,7 +147,9 @@ export const messagesServices = {
       sentAt,
     });
 
-    if (!messageUpdated) throw new CustomError("Internal server error", 404);
+    if (!messageUpdated) {
+      throw new CustomError("Internal server error", 404);
+    }
 
     return messageUpdated;
   },

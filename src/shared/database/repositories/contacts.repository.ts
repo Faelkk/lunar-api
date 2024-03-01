@@ -1,27 +1,17 @@
 import sql from "../../../connect/connection";
-import {
-  ContactCreateDto,
-  ContactDto,
-  contactResponse,
-} from "../../types/ContactTypes";
+import { ContactDto } from "../../types/ContactTypes";
 
 export const contactsRepository = {
-  async findContact(contactId: string) {
-    const result: contactResponse[] =
-      await sql`SELECT * FROM users WHERE id = ${contactId}`;
-
-    return result[0];
-  },
-
   async getContacts(userId: string) {
-    const result = await sql`SELECT * FROM contacts where user_id = ${userId}`;
+    const result =
+      await sql`SELECT * FROM contacts WHERE (inviter_user_id  = ${userId}) OR (accepted_user_id = ${userId}) `;
 
     return result;
   },
 
   async getOneContact({ userId, contactId }: ContactDto) {
     const result =
-      await sql`SELECT * FROM contacts WHERE user_id = ${userId} AND id = ${contactId}`;
+      await sql`SELECT * FROM contacts WHERE inviter_user_id  = ${contactId} AND   accepted_user_id = ${userId}`;
 
     return result[0];
   },
@@ -30,7 +20,7 @@ export const contactsRepository = {
     const result = await sql`
   INSERT INTO invites (sender_id, receiver_id, accepted)
   VALUES (${userId}, ${contactId}, false)
-  ON CONFLICT (receiver_id) DO NOTHING RETURNING *;
+  RETURNING *;
 `;
 
     return result;
@@ -38,13 +28,13 @@ export const contactsRepository = {
 
   async deleteContact({ userId, contactId }: ContactDto) {
     const result =
-      await `DELETE FROM contacts WHERE user_id = ${userId} AND id = ${contactId}`;
+      await sql`DELETE FROM contacts WHERE inviter_user_id = ${userId} AND id = ${contactId}`;
     return result;
   },
 
-  async createContact({ contactId, userId, icon, userName }: ContactCreateDto) {
+  async createContact({ userId, contactId }: ContactDto) {
     const result =
-      await sql`INSERT INTO contacts (user_id,icon,username,contactid) VALUES (${userId},${icon},${userName},${contactId}) RETURNING *`;
+      await sql`INSERT INTO contacts ( inviter_user_id , accepted_user_id) VALUES (${contactId},${userId}) RETURNING *`;
 
     return result;
   },

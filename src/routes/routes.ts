@@ -27,24 +27,14 @@ export const routes = [
   },
 
   {
-    endpoint: "contacts",
+    endpoint: "/contacts",
     method: "GET",
     handlers: contactsController.getContacts,
   },
   {
-    endpoint: "contacts/:id",
-    method: "GET",
-    handlers: contactsController.deleteContact,
-  },
-  {
-    endpoint: "contacts",
+    endpoint: "/contacts",
     method: "POST",
     handlers: contactsController.addContacts,
-  },
-  {
-    endpoint: "contacts/:id",
-    method: "DELETE",
-    handlers: contactsController.getOneContact,
   },
   {
     endpoint: "/contacts/invites",
@@ -57,22 +47,37 @@ export const routes = [
     handlers: invitesController.acceptInvite,
   },
   {
-    endpoint: "messages",
+    endpoint: "/contacts/reject",
+    method: "DELETE",
+    handlers: invitesController.rejectInvite,
+  },
+  {
+    endpoint: "/contacts/:id",
+    method: "DELETE",
+    handlers: contactsController.deleteContact,
+  },
+  {
+    endpoint: "/contacts/:id",
+    method: "GET",
+    handlers: contactsController.getOneContact,
+  },
+  {
+    endpoint: "/messages",
     method: "GET",
     handlers: messagesController.getMessages,
   },
   {
-    endpoint: "messages",
+    endpoint: "/messages",
     method: "POST",
     handlers: messagesController.sendMessage,
   },
   {
-    endpoint: "messages/:id",
+    endpoint: "/messages/:id",
     method: "DELETE",
     handlers: messagesController.deleteMessage,
   },
   {
-    endpoint: "messages/:id",
+    endpoint: "/messages/:id",
     method: "PUT",
     handlers: messagesController.updateMessage,
   },

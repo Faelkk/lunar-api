@@ -39,8 +39,6 @@ export const usersController = {
 
       return res.send!(200, { accessToken, apiKey });
     } catch (err: any) {
-      console.log(err);
-
       return sendErrorResponse(res, err);
     }
   },

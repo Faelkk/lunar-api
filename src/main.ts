@@ -8,6 +8,8 @@ import { handlePreflightRequest } from "./handlers/handlePreflightRequest";
 import { CustomServerResponse } from "./shared/types/httpType";
 import { authMiddleware } from "./shared/middlewares/auth/authMiddleware";
 import { Server } from "socket.io";
+import { isUUID } from "./shared/utils/isUUID";
+import { handleRequest } from "./handlers/handleRequest";
 
 const server = http.createServer(
   async (req: http.IncomingMessage, res: CustomServerResponse) => {
@@ -15,24 +17,7 @@ const server = http.createServer(
       activeCors(res);
       handlePreflightRequest(req, res);
 
-      const requestUrl = req.url;
-      if (requestUrl === undefined) throw new Error();
-
-      const parsedUrl = new url.URL(requestUrl, `http://${req.headers.host}`);
-
-      let pathname = parsedUrl.pathname || "";
-
-      const splitEndPoint = pathname.split("/").filter(Boolean);
-      if (splitEndPoint.length > 1) {
-        pathname = `/${splitEndPoint[0]}/:id`;
-      }
-
-      const route = routes.find((routeOBJ) => {
-        console.log(routeOBJ.endpoint);
-        console.log(pathname, "pathnameeee");
-
-        return routeOBJ.endpoint === pathname && routeOBJ.method === req.method;
-      });
+      const { parsedUrl, route } = handleRequest(req);
 
       if (route) {
         authMiddleware({
