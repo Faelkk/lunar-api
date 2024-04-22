@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import env from "../../shared/config/config";
 import CustomError from "../../shared/utils/customError";
-import { UserEditIconDto } from "./dto/UserEditIconDto";
+import { UserEdit, UserEditDto } from "./dto/UserEdit";
 import { UserNameEditDto } from "./dto/UserNameEditDto";
 
 interface SigninProps {
@@ -16,7 +16,6 @@ interface SigninProps {
 
 interface SignupProps extends SigninProps {
   name: string;
-  icon: string;
   username: string;
 }
 
@@ -34,6 +33,14 @@ interface UserNameEditProps {
   userNameDto: string;
   userId: string;
   idDto: string;
+}
+
+interface UserEditProps {
+  nameDto: string;
+  usernameDto: string;
+  emailDto: string;
+  iconDto: string | undefined;
+  userId: string;
 }
 
 export const usersService = {
@@ -63,13 +70,12 @@ export const usersService = {
 
     return { accessToken, apiKey: apiKey };
   },
-  async signup({ name, email, icon, username, password }: SignupProps) {
+  async signup({ name, email, username, password }: SignupProps) {
     const signupDtoData = SignupnDTO({
       name,
       email,
       username,
       password,
-      icon,
     });
 
     const userAlreadyExists = await usersRepository.findUnique(
@@ -97,7 +103,7 @@ export const usersService = {
       name: signupDtoData.name,
       password: hashedPassword,
       username: signupDtoData.username,
-      icon: icon,
+      icon: null,
     });
 
     if (!user) {
@@ -121,37 +127,70 @@ export const usersService = {
 
     return { accessToken, apiKey };
   },
-  async editUserIcon({ userId, iconDto, idDto }: UserEditIconProps) {
-    const { icon, id } = UserEditIconDto({ iconDto, idDto });
 
-    const usersExists = await usersRepository.findUser(userId);
-    if (!usersExists) {
+  // async editUserName({ userId, userNameDto, idDto }: UserNameEditProps) {
+  //   const { username, id } = UserNameEditDto({ userNameDto, idDto });
+
+  //   const usersExists = await usersRepository.findUser(userId);
+  //   if (!usersExists) {
+  //     throw new CustomError("User not found", 404);
+  //   }
+
+  //   if (id !== userId) {
+  //     throw new CustomError("Unauthorized operation", 403);
+  //   }
+
+  //   const userNameAlreadyBeingUsed = await usersRepository.findUserName(
+  //     username
+  //   );
+
+  //   if (userNameAlreadyBeingUsed && userNameAlreadyBeingUsed.username) {
+  //     throw new CustomError("Username already being used", 409);
+  //   }
+
+  //   const editedUser = await usersRepository.editUserName(userId, username);
+
+  //   if (!editedUser) {
+  //     throw new CustomError("Internal server error", 404);
+  //   }
+
+  //   return editedUser;
+  // },
+
+  async getUser(userId: string) {
+    if (!userId) throw new CustomError("UserId is required", 400);
+
+    const user = await usersRepository.findUser(userId);
+
+    if (!user) {
       throw new CustomError("User not found", 404);
     }
 
-    if (id !== userId) {
-      throw new CustomError("Unauthorized operation", 403);
-    }
-
-    const editedUser = await usersRepository.editIconUser(userId, icon);
-
-    if (!editedUser) {
-      throw new CustomError("Internal server error", 404);
-    }
-
-    return editedUser;
+    return user;
   },
 
-  async editUserName({ userId, userNameDto, idDto }: UserNameEditProps) {
-    const { username, id } = UserNameEditDto({ userNameDto, idDto });
+  async editUser({
+    usernameDto,
+    emailDto,
+    nameDto,
+    iconDto,
+    userId,
+  }: UserEditProps) {
+    const { name, email, icon, username } = await UserEdit({
+      usernameDto,
+      emailDto,
+      nameDto,
+      iconDto,
+    });
 
-    const usersExists = await usersRepository.findUser(userId);
-    if (!usersExists) {
-      throw new CustomError("User not found", 404);
+    const user = await usersRepository.findUser(userId);
+
+    if (!user) {
+      throw new CustomError("User not found", 400);
     }
 
-    if (id !== userId) {
-      throw new CustomError("Unauthorized operation", 403);
+    if (user.email === email) {
+      throw new CustomError("Email already being used", 409);
     }
 
     const userNameAlreadyBeingUsed = await usersRepository.findUserName(
@@ -162,11 +201,13 @@ export const usersService = {
       throw new CustomError("Username already being used", 409);
     }
 
-    const editedUser = await usersRepository.editUserName(userId, username);
-
-    if (!editedUser) {
-      throw new CustomError("Internal server error", 404);
-    }
+    const editedUser = await usersRepository.editUser({
+      name,
+      email,
+      icon,
+      username,
+      id: userId,
+    });
 
     return editedUser;
   },

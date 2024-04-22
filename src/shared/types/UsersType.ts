@@ -12,7 +12,7 @@ export interface SigninResponse extends BaseUser {
 export interface SignupDtoData extends BaseUser {
   name: string;
   username: string;
-  icon: string;
+  icon: string | null;
 }
 
 export interface SignupResponse extends SignupDtoData {
@@ -34,4 +34,5 @@ export interface UserResponse {
   username: string;
   icon: string;
   id: string;
+  email: string;
 }

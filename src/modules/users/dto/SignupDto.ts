@@ -5,7 +5,6 @@ export interface SignupDTOprops {
   name: string;
   password: string;
   username: string;
-  icon: string;
 }
 
 export const SignupnDTO = ({
@@ -13,7 +12,6 @@ export const SignupnDTO = ({
   email,
   username,
   password,
-  icon,
 }: SignupDTOprops) => {
   if (!email || !name || !password || !username) {
     throw new CustomError(
@@ -22,5 +20,5 @@ export const SignupnDTO = ({
     );
   }
 
-  return { email, name, password, username, icon };
+  return { email, name, password, username };
 };

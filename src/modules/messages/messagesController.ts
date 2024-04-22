@@ -6,23 +6,39 @@ import {
   CustomServerResponse,
 } from "../../shared/types/httpType";
 import { DeleteMessageControllerDto } from "./dto/DeleteMessageDto";
-import { MessagesControllerDto } from "./dto/MessagesDto";
 import { sendMessageControllerDto } from "./dto/SendMessagesDto";
 import { UpdateMessageControllerDto } from "./dto/UpdateMessagesDto";
-
 import { messagesServices } from "./messagesServices";
 
 export const messagesController = {
   async getMessages(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
     const { id } = req.params as { id: string };
+
     try {
       const messages = await messagesServices.getMessages({
         userId,
         contactIdDto: id,
       });
 
-      io.emit("messages@new", messages);
+      return res.send!(200, messages);
+    } catch (err: any) {
+      return sendErrorResponse(res, err);
+    }
+  },
+
+  async getOneMessageById(
+    req: CustomIncomingMessage,
+    res: CustomServerResponse
+  ) {
+    const { userId } = await ActiveUserId(req);
+    const { id } = req.params as { id: string };
+
+    try {
+      const messages = await messagesServices.getOneMessage({
+        userId,
+        contactIdDto: id,
+      });
 
       return res.send!(200, messages);
     } catch (err: any) {
@@ -55,15 +71,21 @@ export const messagesController = {
     const { userId } = await ActiveUserId(req);
     const { id } = req.params as { id: string };
     const { contactId } = req.body as DeleteMessageControllerDto;
-    try {
-      const deletedMessage = await messagesServices.deleteMessages({
-        userId,
-        contactIdDto: contactId,
-        messageIdDto: id,
-      });
 
-      return res.send!(200, deletedMessage);
+    try {
+      const { messageDeleted, messageId } =
+        await messagesServices.deleteMessages({
+          userId,
+          contactIdDto: contactId,
+          messageIdDto: id,
+        });
+
+      io.emit("messages@delete", { messageDeleted, messageId });
+
+      return res.send!(200, messageDeleted);
     } catch (err: any) {
+      console.log(err);
+
       return sendErrorResponse(res, err);
     }
   },
@@ -78,6 +100,8 @@ export const messagesController = {
         userId,
         contactIdDto: contactId,
       });
+
+      io.emit("messages@deleteAll", deletedMessage);
 
       return res.send!(200, deletedMessage);
     } catch (err: any) {
@@ -100,6 +124,8 @@ export const messagesController = {
         contentTypeDto: contentType,
       });
 
+      io.emit("messages@new", updatedMessage);
+
       return res.send!(200, updatedMessage);
     } catch (err: any) {
       return sendErrorResponse(res, err);
@@ -108,6 +134,7 @@ export const messagesController = {
   async sendImage(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
     const content = req.fileUrl as string;
+
     const { contactId, contentType } = req.body as sendMessageControllerDto;
 
     try {
@@ -118,7 +145,7 @@ export const messagesController = {
         contentDto: content,
       });
 
-      io.emit("messages@new", messages);
+      io.emit("messages@newImage", messages);
 
       return res.send!(200, messages);
     } catch (err: any) {
@@ -127,7 +154,7 @@ export const messagesController = {
   },
   async sendVoice(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const content = req.fileUrl as string;
+    const content = req.audioUrl as string;
     const { contactId, contentType } = req.body as sendMessageControllerDto;
 
     try {
@@ -142,6 +169,8 @@ export const messagesController = {
 
       return res.send!(200, messages);
     } catch (err: any) {
+      console.log(err);
+
       return sendErrorResponse(res, err);
     }
   },

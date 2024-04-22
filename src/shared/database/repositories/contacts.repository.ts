@@ -1,5 +1,5 @@
 import sql from "../../../connect/connection";
-import { ContactDto } from "../../types/ContactTypes";
+import { ContactDto, InviteDto } from "../../types/ContactTypes";
 
 export const contactsRepository = {
   async getContacts(userId: string) {
@@ -17,20 +17,29 @@ export const contactsRepository = {
 
     return result[0];
   },
+  async getOneContactById({ userId, contactId }: ContactDto) {
+    const result = await sql`
+    SELECT * FROM contacts
+    WHERE  id = ${contactId} AND (accepted_user_id = ${userId} OR inviter_user_id = ${userId})
+  `;
 
-  async sendInviteContact({ userId, contactId }: ContactDto) {
+    return result[0];
+  },
+
+  async sendInviteContact({ userId, contactId }: InviteDto) {
     const result = await sql`
   INSERT INTO invites (sender_id, receiver_id, accepted)
-  VALUES (${userId}, ${contactId}, false)
+  VALUES (${userId}, ${contactId},  false)
   RETURNING *;
 `;
 
-    return result;
+    return result[0];
   },
 
   async deleteContact({ userId, contactId }: ContactDto) {
     const result =
       await sql`DELETE FROM contacts  WHERE id = ${contactId} AND (inviter_user_id = ${userId} OR accepted_user_id = ${userId})`;
+
     return result;
   },
 
@@ -38,6 +47,6 @@ export const contactsRepository = {
     const result =
       await sql`INSERT INTO contacts ( inviter_user_id , accepted_user_id) VALUES (${contactId},${userId}) RETURNING *`;
 
-    return result;
+    return result[0];
   },
 };

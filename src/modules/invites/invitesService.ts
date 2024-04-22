@@ -10,6 +10,11 @@ interface InviteProps {
   inviteIdDto: string;
 }
 
+interface InviteCancelProps {
+  senderId: string;
+  inviteIdDto: string;
+}
+
 export const invitesService = {
   async getInvites(userId: string) {
     const invites = await invitesRepository.getInvites(userId);
@@ -18,6 +23,15 @@ export const invitesService = {
 
     return invites;
   },
+
+  async getSendInvites(userId: string) {
+    const invites = await invitesRepository.getSendInvites(userId);
+
+    if (!invites) throw new CustomError("No one invite was found", 404);
+
+    return invites;
+  },
+
   async acceptInvite({ userId, inviteIdDto }: InviteProps) {
     const { inviteId } = InviteDto({ inviteIdDto });
     const inviteExists = await invitesRepository.findInvite({
@@ -42,10 +56,13 @@ export const invitesService = {
       contactId: id,
     });
 
-    if (!createdContact) throw new CustomError("Internal server error", 500);
+    if (!createdContact) {
+      throw new CustomError("Internal server error", 500);
+    }
 
-    return createdContact;
+    return { createdContact, inviteExists };
   },
+
   async rejectInvite({ userId, inviteIdDto }: InviteProps) {
     const { inviteId } = InviteDto({ inviteIdDto });
     const inviteExists = await invitesRepository.findInvite({
@@ -66,6 +83,29 @@ export const invitesService = {
       throw new CustomError("Internal server error", 500);
     }
 
-    return { deleted: true };
+    return { deleted: true, inviteExists };
+  },
+
+  async cancelInvite({ userId, inviteIdDto }: InviteProps) {
+    const { inviteId } = InviteDto({ inviteIdDto });
+    const inviteExists = await invitesRepository.findInviteSend({
+      userId,
+      inviteId,
+    });
+
+    if (!inviteExists) {
+      throw new CustomError("Invite not found", 404);
+    }
+
+    const invitedRejected = await invitesRepository.cancelInvite({
+      senderId: userId,
+      inviteId,
+    });
+
+    if (!invitedRejected) {
+      throw new CustomError("Internal server error", 500);
+    }
+
+    return { deleted: true, inviteExists };
   },
 };

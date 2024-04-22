@@ -6,3 +6,10 @@ export interface ContactDto {
 export interface contactResponse {
   id: string;
 }
+
+export interface InviteDto extends ContactDto {}
+
+export interface InviteDtoController {
+  username: string;
+  contactId: string;
+}

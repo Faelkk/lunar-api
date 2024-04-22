@@ -13,7 +13,8 @@ export const uploadMiddlewareHandler = async (
   next: () => void,
   fieldName: string,
   storageName: string,
-  allowedTypes: string[]
+  allowedTypes: string[],
+  required: boolean
 ) => {
   const upload = await configureMulter(fieldName, allowedTypes);
 
@@ -24,6 +25,11 @@ export const uploadMiddlewareHandler = async (
       }
 
       const file = req.file;
+
+      if (!required && !file) {
+        next();
+        return;
+      }
 
       if (!file) {
         throw new CustomError("No file found attached to the request", 400);

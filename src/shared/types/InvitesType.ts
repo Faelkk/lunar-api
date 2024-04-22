@@ -7,3 +7,8 @@ export interface InvitesUserDto {
   userId: string;
   contactId: string;
 }
+
+export interface InvitesCancelDto {
+  inviteId: string;
+  senderId: string;
+}

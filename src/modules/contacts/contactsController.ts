@@ -1,5 +1,7 @@
+import { io } from "../../main";
 import { ActiveUserId } from "../../shared/helpers/activeUserId";
 import { sendErrorResponse } from "../../shared/helpers/responseError";
+import { InviteDtoController } from "../../shared/types/ContactTypes";
 import {
   CustomIncomingMessage,
   CustomServerResponse,
@@ -29,15 +31,20 @@ export const contactsController = {
   },
   async addContacts(req: CustomIncomingMessage, res: CustomServerResponse) {
     const { userId } = await ActiveUserId(req);
-    const { contactId } = req.body as ContactDtoController;
+    const { username } = req.body as InviteDtoController;
+
     try {
       const inviteId = await contactsService.addContacts({
         userId,
-        contactIdDto: contactId,
+        userName: username,
       });
+
+      io.emit("invite@new", inviteId);
 
       return res.send!(200, inviteId);
     } catch (err: any) {
+      console.log(err);
+
       return sendErrorResponse(res, err);
     }
   },
@@ -45,12 +52,14 @@ export const contactsController = {
     const { userId } = await ActiveUserId(req);
     const { id } = req.params as { id: string };
     try {
-      const contacDeleted = await contactsService.deleteContact({
+      const { contactId, deleted } = await contactsService.deleteContact({
         userId,
         contactIdDto: id,
       });
 
-      return res.send!(200, contacDeleted);
+      io.emit("connection@delete", { contactId, deleted });
+
+      return res.send!(200, deleted);
     } catch (err: any) {
       return sendErrorResponse(res, err);
     }

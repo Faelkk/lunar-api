@@ -13,8 +13,9 @@ export async function handleUpload({ storageName, file }: HandleUploadProps) {
       contentType: file.mimetype,
     });
 
-  if (response.error)
+  if (response.error) {
     throw new CustomError("Error uploading to Supabase Storage", 500);
+  }
 
   const baseUrl = `${env.supabaseUrl}/storage/v1/object/public/${storageName}`;
   const fileUrl = `${baseUrl}/${response.data.path}`;

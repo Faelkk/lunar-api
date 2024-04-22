@@ -1,6 +1,7 @@
 import { contactsRepository } from "../../shared/database/repositories/contacts.repository";
 import { messageRepository } from "../../shared/database/repositories/messages.repository";
 import CustomError from "../../shared/utils/customError";
+import { DeleteAllMessageDto } from "./dto/DeleteAllMessageDto";
 import { DeleteMessageDto } from "./dto/DeleteMessageDto";
 import { MessagesDTO } from "./dto/MessagesDto";
 import { sendAudioDto } from "./dto/SendAudioDto";
@@ -49,6 +50,29 @@ export const messagesServices = {
 
     return messages;
   },
+
+  async getOneMessage({ userId, contactIdDto }: MessageProps) {
+    const { contactId } = MessagesDTO({ contactIdDto });
+
+    const contactExists = await contactsRepository.getOneContact({
+      userId,
+      contactId,
+    });
+
+    if (!contactExists) throw new CustomError("Contact Not Found", 404);
+
+    const messages = await messageRepository.getOneMessage({
+      userId,
+      contactId,
+    });
+
+    if (!messages) {
+      throw new CustomError("Message Not found", 404);
+    }
+
+    return messages;
+  },
+
   async sendMessages({
     userId,
     contactIdDto,
@@ -108,10 +132,33 @@ export const messagesServices = {
       throw new CustomError("Internal server error", 404);
     }
 
-    return { messageDeleted: true };
+    return { messageDeleted: true, messageId };
   },
 
-  async deleteAllMessages({ userId, contactIdDto }: MessageProps) {},
+  async deleteAllMessages({ userId, contactIdDto }: MessageProps) {
+    const { contactId } = DeleteAllMessageDto({
+      contactIdDto,
+    });
+    const messageExists = await messageRepository.findMessages({
+      contactId,
+      userId,
+    });
+
+    if (!messageExists) {
+      throw new CustomError("Message not found", 404);
+    }
+
+    const messageDeleted = await messageRepository.deleteAllMessages({
+      userId,
+      contactId,
+    });
+
+    if (!messageDeleted) {
+      throw new CustomError("Internal server error", 404);
+    }
+
+    return { messageDeleted: true };
+  },
 
   async updateMessages({
     userId,

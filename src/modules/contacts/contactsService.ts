@@ -4,10 +4,16 @@ import { messageRepository } from "../../shared/database/repositories/messages.r
 import { usersRepository } from "../../shared/database/repositories/users.repository";
 import CustomError from "../../shared/utils/customError";
 import { ContactDto } from "./dto/ContactDto";
+import { AddContactDto } from "./dto/addContactDto";
 
 interface ContactsProps {
   userId: string;
   contactIdDto: string;
+}
+
+export interface InviteProps {
+  userId: string;
+  userName: string;
 }
 
 export const contactsService = {
@@ -34,16 +40,20 @@ export const contactsService = {
 
     return contact;
   },
-  async addContacts({ userId, contactIdDto }: ContactsProps) {
-    const { contactId } = ContactDto({ contactIdDto });
+  async addContacts({ userId, userName }: InviteProps) {
+    const { username } = AddContactDto({
+      userName,
+    });
 
-    if (userId === contactId) {
+    const userExists = await usersRepository.findUserName(username);
+
+    if (!userExists) {
       throw new CustomError("Contact not found", 404);
     }
 
-    const userExists = await usersRepository.findUser(contactIdDto);
+    const contactId = userExists.id;
 
-    if (!userExists) {
+    if (contactId === userId) {
       throw new CustomError("Contact not found", 404);
     }
 
@@ -78,7 +88,7 @@ export const contactsService = {
   },
   async deleteContact({ userId, contactIdDto }: ContactsProps) {
     const { contactId } = ContactDto({ contactIdDto });
-    const contactExists = await contactsRepository.getOneContact({
+    const contactExists = await contactsRepository.getOneContactById({
       userId,
       contactId,
     });
@@ -93,6 +103,10 @@ export const contactsService = {
     });
 
     if (messageExists) {
+      const contactId =
+        contactExists.accepted_user_id === userId
+          ? contactExists.inviter_user_id
+          : contactExists.accepted_user_id;
       const deleteMesages = await messageRepository.deleteAllMessages({
         userId,
         contactId,
@@ -108,6 +122,6 @@ export const contactsService = {
 
     if (!contacDeleted) throw new CustomError("Internal server error", 500);
 
-    return { deleted: true };
+    return { deleted: true, contactId };
   },
 };

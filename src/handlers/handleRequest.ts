@@ -13,6 +13,7 @@ type Routes = {
   method: string;
   endpoint: string;
   handlers: (req: http.IncomingMessage, res: http.ServerResponse) => void;
+  middleware?: string[];
 };
 
 export function handleRequest(req: http.IncomingMessage): ParsedRequest {

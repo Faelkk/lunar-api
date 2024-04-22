@@ -1,19 +1,25 @@
 import * as http from "http";
-import * as url from "url";
 
-import { routes } from "./routes/routes";
 import { handleRoutes } from "./handlers/handleRoutes";
 import { activeCors } from "./shared/helpers/activeCors";
 import { handlePreflightRequest } from "./handlers/handlePreflightRequest";
 import { CustomServerResponse } from "./shared/types/httpType";
 import { authMiddleware } from "./shared/middlewares/auth/authMiddleware";
 import { Server } from "socket.io";
-import { isUUID } from "./shared/utils/isUUID";
 import { handleRequest } from "./handlers/handleRequest";
 
 const server = http.createServer(
   async (req: http.IncomingMessage, res: CustomServerResponse) => {
     try {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, OPTIONS, PUT, DELETE"
+      );
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization"
+      );
       activeCors(res);
       handlePreflightRequest(req, res);
 
@@ -38,8 +44,14 @@ const server = http.createServer(
   }
 );
 
-export const io = new Server(server);
+export const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    credentials: true, // if you need to send cookies along with the request
+  },
+});
 
-server.listen(3000, () => {
+server.listen(5000, () => {
   console.log("server is open");
 });

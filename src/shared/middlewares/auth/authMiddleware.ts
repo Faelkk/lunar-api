@@ -17,29 +17,28 @@ export async function authMiddleware({ req, res, next }: AuthMiddlewareParams) {
   const publicRoutes = ["/signin", "/signup"];
 
   if (publicRoutes.includes(req.url!)) {
-    next();
-  } else {
-    try {
-      await verifyJWTTokenFromRequest(req);
+    return next();
+  }
 
-      if (isWriteMethod(req.method!)) {
-        const isApiKeyValid = await getAndValidateApiKey(req);
-        if (isApiKeyValid) {
-          next();
-        } else {
-          throw new Error("Unauthorized");
-        }
-      } else {
-        next();
+  try {
+    await verifyJWTTokenFromRequest(req);
+
+    if (isWriteMethod(req.method!)) {
+      const isApiKeyValid = await getAndValidateApiKey(req);
+      if (isApiKeyValid) {
+        return next();
       }
-    } catch (err: any) {
-      handleAuthError(res, err);
+      throw new Error("Unauthorized");
     }
+
+    next();
+  } catch (err: any) {
+    handleAuthError(res, err);
   }
 }
 
 async function verifyJWTTokenFromRequest(req: CustomIncomingMessage) {
-  const token = await getTokenFromRequest(req);
+  const token = getTokenFromRequest(req);
 
   if (token) {
     await verifyJWTToken(req, token);
@@ -55,9 +54,10 @@ function getTokenFromRequest(req: CustomIncomingMessage) {
 
 async function verifyJWTToken(req: CustomIncomingMessage, token: string) {
   try {
-    const decoded = (await jwt.verify(token, env.jwtSecret!)) as {
+    const decoded = jwt.verify(token, env.jwtSecret!) as {
       userId: string;
     };
+
     req.userId = decoded.userId;
   } catch (err) {
     throw new Error("Token verification failed");
@@ -69,9 +69,8 @@ async function getAndValidateApiKey(req: CustomIncomingMessage) {
 
   if (apiKey) {
     return await validateApiKey(apiKey, req);
-  } else {
-    return false;
   }
+  return false;
 }
 
 function getApiKey(req: CustomIncomingMessage): string | null {

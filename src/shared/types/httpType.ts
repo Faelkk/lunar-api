@@ -12,4 +12,5 @@ export interface CustomIncomingMessage extends http.IncomingMessage {
   files?: any;
   fileUrl?: string;
   userId?: string;
+  audioUrl?: string;
 }

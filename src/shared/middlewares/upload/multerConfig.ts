@@ -9,15 +9,15 @@ export const configureMulter = (fieldName: string, allowedTypes: string[]) => {
     fileFilter: (req, file, cb) => {
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
-      } else {
-        cb(
-          new CustomError(
-            "Invalid file type. Only specific file types are allowed.",
-            400
-          ) as any | null,
-          false
-        );
+        return;
       }
+      cb(
+        new CustomError(
+          "Invalid file type. Only specific file types are allowed.",
+          400
+        ) as any | null,
+        false
+      );
     },
   }).single(fieldName);
 };

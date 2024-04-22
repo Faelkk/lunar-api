@@ -16,14 +16,20 @@ export const routes = [
     handlers: usersController.signup,
   },
   {
-    endpoint: "/editUserIcon/:id",
-    method: "PUT",
-    handlers: usersController.editUserIcon,
+    endpoint: "/me",
+    method: "GET",
+    handlers: usersController.getUser,
   },
   {
-    endpoint: "/editUserName/:id",
-    method: "PUT",
-    handlers: usersController.editUserName,
+    endpoint: "/user/:userId",
+    method: "GET",
+    handlers: usersController.getUserById,
+  },
+  {
+    endpoint: "/user/edit",
+    method: "PATCH",
+    handlers: usersController.editUser,
+    middleware: ["uploadMiddleware"],
   },
 
   {
@@ -42,6 +48,11 @@ export const routes = [
     handlers: invitesController.getInvites,
   },
   {
+    endpoint: "/contacts/send",
+    method: "GET",
+    handlers: invitesController.getSendInvites,
+  },
+  {
     endpoint: "/contacts/accept",
     method: "POST",
     handlers: invitesController.acceptInvite,
@@ -50,6 +61,11 @@ export const routes = [
     endpoint: "/contacts/reject",
     method: "DELETE",
     handlers: invitesController.rejectInvite,
+  },
+  {
+    endpoint: "/contacts/cancel",
+    method: "DELETE",
+    handlers: invitesController.cancelInvite,
   },
   {
     endpoint: "/contacts/:id",
@@ -75,16 +91,28 @@ export const routes = [
     endpoint: "/messages/image",
     method: "POST",
     handlers: messagesController.sendImage,
+    middleware: ["uploadMiddleware"],
   },
   {
-    endpoint: "/messages/voice",
+    endpoint: "/messages/audio",
     method: "POST",
     handlers: messagesController.sendVoice,
+    middleware: ["audioMiddleware"],
   },
   {
     endpoint: "/messages/:id",
     method: "DELETE",
     handlers: messagesController.deleteMessage,
+  },
+  {
+    endpoint: "/messages/all",
+    method: "DELETE",
+    handlers: messagesController.deleteAllMessagesContact,
+  },
+  {
+    endpoint: "/message/:id",
+    method: "GET",
+    handlers: messagesController.getOneMessageById,
   },
   {
     endpoint: "/messages/:id",

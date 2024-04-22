@@ -14,16 +14,18 @@ export const uploadMiddleware = (config: {
   fieldName: string;
   storageName: string;
   allowedTypes: string[];
+  required: boolean;
 }) => {
   return async ({ req, res, next }: UploadMiddlewareProps) => {
-    const { fieldName, storageName, allowedTypes } = config;
+    const { fieldName, storageName, allowedTypes, required } = config;
     await uploadMiddlewareHandler(
       req,
       res,
       next,
       fieldName,
       storageName,
-      allowedTypes
+      allowedTypes,
+      required
     );
   };
 };

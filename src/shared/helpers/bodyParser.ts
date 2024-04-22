@@ -17,7 +17,9 @@ export function bodyParser({ req, next }: bodyParserProps) {
       if (body) {
         body = JSON.parse(body);
       }
+
       req.body = body;
+
       next();
     } catch (error) {
       next(error);

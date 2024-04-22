@@ -1,4 +1,6 @@
+import postgres from "postgres";
 import sql from "../../../connect/connection";
+import env from "../../config/config";
 import {
   SigninResponse,
   SignupDtoData,
@@ -7,6 +9,10 @@ import {
   ApiKeyResponse,
   UserResponse,
 } from "../../types/UsersType";
+
+const personalized = postgres(env.dbUrl!) as any;
+
+export default personalized;
 
 export const usersRepository = {
   async findUnique(email: string) {
@@ -57,15 +63,27 @@ export const usersRepository = {
 
     return result[0];
   },
-  async editIconUser(userId: string, icon: string) {
-    const result =
-      await sql`UPDATE users SET icon = ${icon} WHERE id = ${userId} RETURNING *`;
-    return result[0];
-  },
+  async editUser({ username, email, name, icon, id }: any) {
+    let result = [] as any;
 
-  async editUserName(userId: string, username: string) {
-    const result =
-      await sql`UPDATE users SET username = ${username} WHERE id = ${userId} RETURNING username`;
+    if (name) {
+      result =
+        await sql`UPDATE users SET name = ${name} WHERE id = ${id} RETURNING *`;
+    }
+
+    if (email) {
+      result =
+        await sql`UPDATE users SET email = ${email} WHERE id = ${id} RETURNING *`;
+    }
+    if (icon) {
+      result =
+        await sql`UPDATE users SET icon = ${icon} WHERE id = ${id} RETURNING *`;
+    }
+    if (username) {
+      result =
+        await sql`UPDATE users SET username = ${username} WHERE id = ${id} RETURNING *`;
+    }
+
     return result[0];
   },
 };
