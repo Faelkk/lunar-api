@@ -2,6 +2,13 @@
 
 A TalkFly API é uma solução back-end desenvolvida em Node.js para fornecer funcionalidades de conversação em tempo real. Utilizando sockets para comunicação instantânea, a API oferece um conjunto robusto de endpoints para gerenciar conexões entre usuários, autenticação segura com JWT, e manipulação de mensagens e arquivos multimídia.
 
+## Recursos Principais
+
+- Conexões de Usuário: Endpoint para estabelecer, deletar, aceitar e recusar solicitações de conexão entre usuários.
+- Autenticação JWT: Rotas para registrar, autenticar e gerenciar usuários, garantindo acesso seguro às funcionalidades da API.
+- Gerenciamento de Mensagens: Endpoints para enviar, editar e deletar mensagens durante as conversas.
+- Envio de Arquivos Multimídia: Capacidade de enviar e receber arquivos de áudio e fotos durante as conversas.
+
 ## 🛠️ Tecnologias
 
 📁 **Back-end**
@@ -24,8 +31,6 @@ A TalkFly API é uma solução back-end desenvolvida em Node.js para fornecer fu
 🔋 **Controle de versão e deploy**
 
 - [Git](https://git-scm.com)
-
-- [Vercel](https://vercel.com/)
 
 ⚙️ **Configuranções e Instalações**
 
